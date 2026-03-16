@@ -67,6 +67,7 @@ struct SettingsView: View {
             }
             .sheet(isPresented: $showingAddActivity) {
                 ActivityEditorView(activity: nil)
+                    .environmentObject(store)
             }
         }
     }

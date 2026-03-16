@@ -8,39 +8,41 @@ struct ActivityRow: View {
     @State private var showingDetail = false
 
     var body: some View {
-        HStack(spacing: 12) {
-            Text(activity.emoji)
-                .font(.title2)
-
-            VStack(alignment: .leading, spacing: 2) {
-                Text(activity.name)
-                    .font(.headline)
-                    .foregroundColor(.primary)
-
-                if !activity.subtitle.isEmpty {
-                    Text(activity.subtitle)
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                }
-            }
-
-            Spacer()
-
-            statusBadge
-        }
-        .padding()
-        .background(isLogged ? Color.green.opacity(0.1) : Color(.secondarySystemGroupedBackground))
-        .cornerRadius(12)
-        .overlay(
-            RoundedRectangle(cornerRadius: 12)
-                .stroke(isLogged ? Color.green.opacity(0.3) : Color.clear, lineWidth: 1)
-        )
-        .contentShape(Rectangle())
-        .onTapGesture {
+        Button(action: {
             showingDetail = true
+        }) {
+            HStack(spacing: 12) {
+                Text(activity.emoji)
+                    .font(.title2)
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(activity.name)
+                        .font(.headline)
+                        .foregroundColor(.primary)
+
+                    if !activity.subtitle.isEmpty {
+                        Text(activity.subtitle)
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                }
+
+                Spacer()
+
+                statusBadge
+            }
+            .padding()
+            .background(isLogged ? Color.green.opacity(0.1) : Color(.secondarySystemGroupedBackground))
+            .cornerRadius(12)
+            .overlay(
+                RoundedRectangle(cornerRadius: 12)
+                    .stroke(isLogged ? Color.green.opacity(0.3) : Color.clear, lineWidth: 1)
+            )
         }
+        .buttonStyle(PlainButtonStyle())
         .sheet(isPresented: $showingDetail) {
             logEntrySheet
+                .environmentObject(store)
         }
     }
 
