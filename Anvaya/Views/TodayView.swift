@@ -9,8 +9,7 @@ struct TodayView: View {
                 // Header
                 VStack(spacing: 4) {
                     Text("Anvaya")
-                        .font(.largeTitle)
-                        .fontWeight(.bold)
+                        .font(Font.largeTitle.bold())
                     Text("Small Habits. Meaningful Change.")
                         .font(.subheadline)
                         .foregroundColor(.secondary)

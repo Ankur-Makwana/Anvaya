@@ -6,34 +6,41 @@ struct YesNoLogView: View {
     let activity: Activity
     let existingLog: DayLog?
 
+    private var isAlreadyLogged: Bool {
+        existingLog?.boolValue == true
+    }
+
     var body: some View {
         VStack(spacing: 30) {
             Text(activity.emoji)
                 .font(.system(size: 60))
 
-            if let log = existingLog, log.boolValue == true {
+            if isAlreadyLogged {
                 Label("Logged today!", systemImage: "checkmark.circle.fill")
                     .font(.title2)
-                    .foregroundColor(.green)
+                    .foregroundColor(Color.green)
 
-                Button("Remove Log") {
-                    store.deleteLog(log)
+                Button(action: {
+                    if let log = existingLog {
+                        store.deleteLog(log)
+                    }
                     presentationMode.wrappedValue.dismiss()
+                }) {
+                    Text("Remove Log")
+                        .foregroundColor(Color.red)
+                        .padding()
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 8)
+                                .stroke(Color.red, lineWidth: 1)
+                        )
                 }
-                .foregroundColor(.red)
-                .padding()
-                .overlay(
-                    RoundedRectangle(cornerRadius: 8)
-                        .stroke(Color.red, lineWidth: 1)
-                )
             } else {
-                Button {
+                Button(action: {
                     logYes()
-                } label: {
-                    Label("Done!", systemImage: "checkmark")
-                        .font(.title3)
-                        .fontWeight(.bold)
-                        .foregroundColor(.white)
+                }) {
+                    Text("Done!")
+                        .font(Font.title3.bold())
+                        .foregroundColor(Color.white)
                         .frame(maxWidth: .infinity)
                         .padding()
                         .background(Color.green)
