@@ -21,6 +21,7 @@
 		A1000001000000000000000C /* SingleSelectLogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000001000000000000000C /* SingleSelectLogView.swift */; };
 		A1000001000000000000000D /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000001000000000000000D /* SettingsView.swift */; };
 		A1000001000000000000000E /* ActivityEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000001000000000000000E /* ActivityEditorView.swift */; };
+		A10000010000000000000010 /* SelectWithDurationLogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000010000000000000012 /* SelectWithDurationLogView.swift */; };
 		A1000001000000000000000F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A2000001000000000000000F /* Assets.xcassets */; };
 /* End PBXBuildFile section */
 
@@ -41,6 +42,7 @@
 		A2000001000000000000000E /* ActivityEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityEditorView.swift; sourceTree = "<group>"; };
 		A2000001000000000000000F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		A20000010000000000000010 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A20000010000000000000012 /* SelectWithDurationLogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectWithDurationLogView.swift; sourceTree = "<group>"; };
 		A20000010000000000000011 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		A30000010000000000000001 /* Anvaya.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Anvaya.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -107,6 +109,7 @@
 				A2000001000000000000000A /* DurationLogView.swift */,
 				A2000001000000000000000B /* MultiSelectLogView.swift */,
 				A2000001000000000000000C /* SingleSelectLogView.swift */,
+				A20000010000000000000012 /* SelectWithDurationLogView.swift */,
 			);
 			path = LogEntryViews;
 			sourceTree = "<group>";
@@ -225,6 +228,7 @@
 				A1000001000000000000000C /* SingleSelectLogView.swift in Sources */,
 				A1000001000000000000000D /* SettingsView.swift in Sources */,
 				A1000001000000000000000E /* ActivityEditorView.swift in Sources */,
+				A10000010000000000000010 /* SelectWithDurationLogView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

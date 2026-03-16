@@ -145,15 +145,9 @@ class DataStore: ObservableObject {
             Activity(
                 name: "Climbing",
                 emoji: "🧗",
-                trackingType: .singleSelect,
+                trackingType: .singleSelectWithDuration,
                 sortOrder: 0,
-                options: ["Boulder", "Rope"]
-            ),
-            Activity(
-                name: "Climbing Duration",
-                emoji: "⏱️",
-                trackingType: .duration,
-                sortOrder: 1,
+                options: ["Boulder", "Rope", "Both"],
                 durationPresets: [30, 45, 60, 90, 120]
             ),
             Activity(
@@ -161,53 +155,53 @@ class DataStore: ObservableObject {
                 subtitle: "Goal: 4 bottles",
                 emoji: "💧",
                 trackingType: .counter,
-                sortOrder: 2,
+                sortOrder: 1,
                 counterGoal: 4
             ),
             Activity(
                 name: "Strength Training",
                 emoji: "💪",
                 trackingType: .singleSelect,
-                sortOrder: 3,
+                sortOrder: 2,
                 options: ["Strength", "Core", "Plyo"]
             ),
             Activity(
                 name: "Rolling",
                 emoji: "🔵",
                 trackingType: .multiSelect,
-                sortOrder: 4,
+                sortOrder: 3,
                 tags: ["Adductors", "Hip Flexors", "Lats", "Serratus", "Chest", "Quads", "Hamstrings", "Calves", "Glutes", "Upper Back"]
             ),
             Activity(
                 name: "Protein Drink",
                 emoji: "🥤",
                 trackingType: .yesNo,
-                sortOrder: 5
+                sortOrder: 4
             ),
             Activity(
                 name: "Creatine",
                 emoji: "💊",
                 trackingType: .yesNo,
-                sortOrder: 6
+                sortOrder: 5
             ),
             Activity(
                 name: "Overnight Oats",
                 emoji: "🥣",
                 trackingType: .yesNo,
-                sortOrder: 7
+                sortOrder: 6
             ),
             Activity(
                 name: "Diaphragmatic Breathing",
                 emoji: "🌬️",
                 trackingType: .duration,
-                sortOrder: 8,
+                sortOrder: 7,
                 durationPresets: [5, 10, 15, 20, 30]
             ),
             Activity(
                 name: "Tennis",
                 emoji: "🎾",
                 trackingType: .duration,
-                sortOrder: 9,
+                sortOrder: 8,
                 durationPresets: [30, 45, 60, 90, 120]
             ),
         ]

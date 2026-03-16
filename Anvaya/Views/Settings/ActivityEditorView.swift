@@ -76,6 +76,9 @@ struct ActivityEditorView: View {
             counterSection
         } else if trackingType == .singleSelect {
             optionsSection
+        } else if trackingType == .singleSelectWithDuration {
+            optionsSection
+            durationSection
         } else if trackingType == .multiSelect {
             tagsSection
         } else if trackingType == .duration {

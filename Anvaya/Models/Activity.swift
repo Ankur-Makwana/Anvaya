@@ -6,6 +6,7 @@ enum TrackingType: String, Codable, CaseIterable, Identifiable {
     case duration = "Duration"
     case multiSelect = "Multi-Select"
     case singleSelect = "Single-Select"
+    case singleSelectWithDuration = "Select + Duration"
 
     var id: String { rawValue }
 }

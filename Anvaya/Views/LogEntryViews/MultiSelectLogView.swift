@@ -7,7 +7,6 @@ struct MultiSelectLogView: View {
     let existingLog: DayLog?
 
     @State private var selectedTags: Set<String> = []
-    @State private var newTag: String = ""
     @State private var showingAddTag = false
 
     var body: some View {
@@ -15,28 +14,26 @@ struct MultiSelectLogView: View {
             Text(activity.emoji)
                 .font(.system(size: 50))
 
-            // Tag grid using LazyVGrid
-            LazyVGrid(columns: [
-                GridItem(.adaptive(minimum: 100))
-            ], spacing: 8) {
+            LazyVGrid(columns: [GridItem(.adaptive(minimum: 100))], spacing: 8) {
                 ForEach(activity.tags, id: \.self) { tag in
-                    Button {
+                    Button(action: {
                         toggleTag(tag)
-                    } label: {
+                    }) {
                         Text(tag)
                             .font(.subheadline)
                             .padding(.horizontal, 14)
                             .padding(.vertical, 8)
                             .frame(maxWidth: .infinity)
                             .background(selectedTags.contains(tag) ? Color.green : Color(.tertiarySystemGroupedBackground))
-                            .foregroundColor(selectedTags.contains(tag) ? .white : .primary)
+                            .foregroundColor(selectedTags.contains(tag) ? Color.white : Color.primary)
                             .cornerRadius(20)
                     }
+                    .buttonStyle(PlainButtonStyle())
                 }
 
-                Button {
+                Button(action: {
                     showingAddTag = true
-                } label: {
+                }) {
                     HStack {
                         Image(systemName: "plus")
                         Text("Add")
@@ -48,21 +45,20 @@ struct MultiSelectLogView: View {
                     .background(Color(.tertiarySystemGroupedBackground))
                     .cornerRadius(20)
                 }
+                .buttonStyle(PlainButtonStyle())
             }
             .padding(.horizontal)
 
             if !selectedTags.isEmpty {
                 Text("\(selectedTags.count) selected")
                     .font(.subheadline)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(Color.secondary)
             }
 
-            Button {
-                saveLog()
-            } label: {
+            Button(action: { saveLog() }) {
                 Text("Save")
                     .font(Font.title3.bold())
-                    .foregroundColor(.white)
+                    .foregroundColor(Color.white)
                     .frame(maxWidth: .infinity)
                     .padding()
                     .background(selectedTags.isEmpty ? Color.gray : Color.green)
@@ -79,23 +75,10 @@ struct MultiSelectLogView: View {
                 selectedTags = Set(tags)
             }
         }
-        .alert(isPresented: $showingAddTag) {
-            Alert(
-                title: Text("Add Muscle Group"),
-                message: Text("Enter the name below"),
-                primaryButton: .default(Text("Add")) {
-                    addNewTag()
-                },
-                secondaryButton: .cancel {
-                    newTag = ""
-                }
-            )
+        .sheet(isPresented: $showingAddTag) {
+            AddTagSheet(activity: activity, selectedTags: $selectedTags)
+                .environmentObject(store)
         }
-        .overlay(
-            // TextField workaround for alert (iOS 14 alerts don't support TextField)
-            // We'll use a sheet instead for adding tags
-            EmptyView()
-        )
     }
 
     private func toggleTag(_ tag: String) {
@@ -104,19 +87,6 @@ struct MultiSelectLogView: View {
         } else {
             selectedTags.insert(tag)
         }
-    }
-
-    private func addNewTag() {
-        let trimmed = newTag.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmed.isEmpty, !activity.tags.contains(trimmed) else {
-            newTag = ""
-            return
-        }
-        var updated = activity
-        updated.tags.append(trimmed)
-        store.updateActivity(updated)
-        selectedTags.insert(trimmed)
-        newTag = ""
     }
 
     private func saveLog() {
@@ -134,6 +104,55 @@ struct MultiSelectLogView: View {
             )
             store.addLog(log)
         }
+        presentationMode.wrappedValue.dismiss()
+    }
+}
+
+struct AddTagSheet: View {
+    @EnvironmentObject var store: DataStore
+    @Environment(\.presentationMode) var presentationMode
+    let activity: Activity
+    @Binding var selectedTags: Set<String>
+    @State private var newTag: String = ""
+
+    var body: some View {
+        NavigationView {
+            VStack(spacing: 20) {
+                TextField("Muscle group name", text: $newTag)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .padding(.horizontal)
+                    .padding(.top, 20)
+
+                Button(action: { addTag() }) {
+                    Text("Add")
+                        .font(Font.headline)
+                        .foregroundColor(Color.white)
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(newTag.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? Color.gray : Color.green)
+                        .cornerRadius(12)
+                }
+                .disabled(newTag.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                .padding(.horizontal)
+
+                Spacer()
+            }
+            .navigationTitle("Add Muscle Group")
+            .navigationBarTitleDisplayMode(.inline)
+            .navigationBarItems(leading: Button("Cancel") {
+                presentationMode.wrappedValue.dismiss()
+            })
+        }
+    }
+
+    private func addTag() {
+        let trimmed = newTag.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty, !activity.tags.contains(trimmed) else { return }
+
+        var updated = activity
+        updated.tags.append(trimmed)
+        store.updateActivity(updated)
+        selectedTags.insert(trimmed)
         presentationMode.wrappedValue.dismiss()
     }
 }

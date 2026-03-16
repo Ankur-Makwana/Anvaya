@@ -31,6 +31,11 @@ struct ActivityRow: View {
             return "—"
         case .singleSelect:
             return todayLogs.last?.selectedOption ?? "—"
+        case .singleSelectWithDuration:
+            if let opt = todayLogs.last?.selectedOption, let min = todayLogs.last?.durationMinutes {
+                return "\(opt) · \(min)m"
+            }
+            return "—"
         }
     }
 
@@ -97,6 +102,8 @@ struct SheetRouter: View {
             DurationLogView(activity: activity, existingLog: existingLog)
         } else if activity.trackingType == .multiSelect {
             MultiSelectLogView(activity: activity, existingLog: existingLog)
+        } else if activity.trackingType == .singleSelectWithDuration {
+            SelectWithDurationLogView(activity: activity, existingLog: existingLog)
         } else {
             SingleSelectLogView(activity: activity, existingLog: existingLog)
         }
