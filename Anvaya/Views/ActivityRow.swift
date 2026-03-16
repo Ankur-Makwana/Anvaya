@@ -8,36 +8,36 @@ struct ActivityRow: View {
     @State private var showingDetail = false
 
     var body: some View {
-        Button {
-            showingDetail = true
-        } label: {
-            HStack(spacing: 12) {
-                Text(activity.emoji)
-                    .font(.title2)
+        HStack(spacing: 12) {
+            Text(activity.emoji)
+                .font(.title2)
 
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(activity.name)
-                        .font(.headline)
-                        .foregroundColor(.primary)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(activity.name)
+                    .font(.headline)
+                    .foregroundColor(.primary)
 
-                    if !activity.subtitle.isEmpty {
-                        Text(activity.subtitle)
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                    }
+                if !activity.subtitle.isEmpty {
+                    Text(activity.subtitle)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
                 }
-
-                Spacer()
-
-                statusBadge
             }
-            .padding()
-            .background(isLogged ? Color.green.opacity(0.1) : Color(.secondarySystemGroupedBackground))
-            .cornerRadius(12)
-            .overlay(
-                RoundedRectangle(cornerRadius: 12)
-                    .stroke(isLogged ? Color.green.opacity(0.3) : Color.clear, lineWidth: 1)
-            )
+
+            Spacer()
+
+            statusBadge
+        }
+        .padding()
+        .background(isLogged ? Color.green.opacity(0.1) : Color(.secondarySystemGroupedBackground))
+        .cornerRadius(12)
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(isLogged ? Color.green.opacity(0.3) : Color.clear, lineWidth: 1)
+        )
+        .contentShape(Rectangle())
+        .onTapGesture {
+            showingDetail = true
         }
         .sheet(isPresented: $showingDetail) {
             logEntrySheet
