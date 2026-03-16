@@ -31,7 +31,8 @@ struct YesNoLogView: View {
                     logYes()
                 } label: {
                     Label("Done!", systemImage: "checkmark")
-                        .font(.title3.bold())
+                        .font(.title3)
+                        .fontWeight(.bold)
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
                         .padding()

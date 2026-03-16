@@ -61,7 +61,8 @@ struct MultiSelectLogView: View {
                 saveLog()
             } label: {
                 Text("Save")
-                    .font(.title3.bold())
+                    .font(.title3)
+                    .fontWeight(.bold)
                     .foregroundColor(.white)
                     .frame(maxWidth: .infinity)
                     .padding()

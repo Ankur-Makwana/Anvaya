@@ -52,30 +52,24 @@ struct ActivityRow: View {
 
     @ViewBuilder
     private var statusBadge: some View {
-        switch activity.trackingType {
-        case .yesNo:
+        if activity.trackingType == .yesNo {
             Image(systemName: isLogged ? "checkmark.circle.fill" : "circle")
                 .font(.title2)
                 .foregroundColor(isLogged ? .green : .secondary)
-
-        case .counter:
-            let count = todayLogs.last?.counterValue ?? 0
-            let goal = activity.counterGoal ?? 0
-            Text("\(count)/\(goal)")
-                .font(.headline.monospacedDigit())
-                .foregroundColor(count >= goal && goal > 0 ? .green : .primary)
-
-        case .duration:
-            if let minutes = todayLogs.last?.durationMinutes {
-                Text("\(minutes) min")
+        } else if activity.trackingType == .counter {
+            Text("\(todayLogs.last?.counterValue ?? 0)/\(activity.counterGoal ?? 0)")
+                .font(Font.headline.monospacedDigit())
+                .foregroundColor(counterGoalMet ? .green : .primary)
+        } else if activity.trackingType == .duration {
+            if todayLogs.last?.durationMinutes != nil {
+                Text("\(todayLogs.last!.durationMinutes!) min")
                     .font(.subheadline)
                     .foregroundColor(.green)
             } else {
                 Text("—")
                     .foregroundColor(.secondary)
             }
-
-        case .multiSelect:
+        } else if activity.trackingType == .multiSelect {
             if let tags = todayLogs.last?.selectedTags, !tags.isEmpty {
                 Text("\(tags.count) logged")
                     .font(.subheadline)
@@ -84,10 +78,9 @@ struct ActivityRow: View {
                 Text("—")
                     .foregroundColor(.secondary)
             }
-
-        case .singleSelect:
-            if let option = todayLogs.last?.selectedOption {
-                Text(option)
+        } else {
+            if todayLogs.last?.selectedOption != nil {
+                Text(todayLogs.last!.selectedOption!)
                     .font(.subheadline)
                     .foregroundColor(.green)
             } else {
@@ -97,25 +90,33 @@ struct ActivityRow: View {
         }
     }
 
+    private var counterGoalMet: Bool {
+        let count = todayLogs.last?.counterValue ?? 0
+        let goal = activity.counterGoal ?? 0
+        return goal > 0 && count >= goal
+    }
+
     // MARK: - Log Entry Sheets
+
+    @ViewBuilder
+    private var logEntryContent: some View {
+        if activity.trackingType == .yesNo {
+            YesNoLogView(activity: activity, existingLog: todayLogs.last)
+        } else if activity.trackingType == .counter {
+            CounterLogView(activity: activity, existingLog: todayLogs.last)
+        } else if activity.trackingType == .duration {
+            DurationLogView(activity: activity, existingLog: todayLogs.last)
+        } else if activity.trackingType == .multiSelect {
+            MultiSelectLogView(activity: activity, existingLog: todayLogs.last)
+        } else {
+            SingleSelectLogView(activity: activity, existingLog: todayLogs.last)
+        }
+    }
 
     @ViewBuilder
     private var logEntrySheet: some View {
         NavigationView {
-            Group {
-                switch activity.trackingType {
-                case .yesNo:
-                    YesNoLogView(activity: activity, existingLog: todayLogs.last)
-                case .counter:
-                    CounterLogView(activity: activity, existingLog: todayLogs.last)
-                case .duration:
-                    DurationLogView(activity: activity, existingLog: todayLogs.last)
-                case .multiSelect:
-                    MultiSelectLogView(activity: activity, existingLog: todayLogs.last)
-                case .singleSelect:
-                    SingleSelectLogView(activity: activity, existingLog: todayLogs.last)
-                }
-            }
+            logEntryContent
             .navigationTitle(activity.name)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

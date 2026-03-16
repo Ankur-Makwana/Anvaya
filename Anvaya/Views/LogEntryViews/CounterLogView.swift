@@ -32,7 +32,7 @@ struct CounterLogView: View {
                 } label: {
                     Image(systemName: "minus.circle.fill")
                         .font(.system(size: 44))
-                        .foregroundColor(.red.opacity(0.8))
+                        .foregroundColor(Color.red.opacity(0.8))
                 }
 
                 Button {
@@ -48,7 +48,8 @@ struct CounterLogView: View {
                 saveLog()
             } label: {
                 Text("Save")
-                    .font(.title3.bold())
+                    .font(.title3)
+                    .fontWeight(.bold)
                     .foregroundColor(.white)
                     .frame(maxWidth: .infinity)
                     .padding()
