@@ -1,54 +1,43 @@
 import SwiftUI
-import SwiftData
 
 struct SettingsView: View {
-    @Environment(\.modelContext) private var modelContext
-    @Environment(\.dismiss) private var dismiss
-    @Query(sort: \Activity.sortOrder) private var activities: [Activity]
-
+    @EnvironmentObject var store: DataStore
+    @Environment(\.presentationMode) var presentationMode
     @State private var showingAddActivity = false
 
-    var activeActivities: [Activity] {
-        activities.filter { !$0.isArchived }
-    }
-
-    var archivedActivities: [Activity] {
-        activities.filter { $0.isArchived }
-    }
-
     var body: some View {
-        NavigationStack {
+        NavigationView {
             List {
-                Section("Active Activities") {
-                    ForEach(activeActivities) { activity in
-                        NavigationLink {
-                            ActivityEditorView(activity: activity)
-                        } label: {
+                Section(header: Text("Active Activities")) {
+                    ForEach(store.activeActivities) { activity in
+                        NavigationLink(destination: ActivityEditorView(activity: activity)) {
                             HStack {
                                 Text(activity.emoji)
                                 Text(activity.name)
                                 Spacer()
                                 Text(activity.trackingType.rawValue)
                                     .font(.caption)
-                                    .foregroundStyle(.secondary)
+                                    .foregroundColor(.secondary)
                             }
                         }
                     }
                     .onMove { from, to in
-                        reorder(from: from, to: to)
+                        var ordered = store.activeActivities
+                        ordered.move(fromOffsets: from, toOffset: to)
+                        store.reorderActivities(ordered)
                     }
                 }
 
-                if !archivedActivities.isEmpty {
-                    Section("Archived") {
-                        ForEach(archivedActivities) { activity in
+                if !store.archivedActivities.isEmpty {
+                    Section(header: Text("Archived")) {
+                        ForEach(store.archivedActivities) { activity in
                             HStack {
                                 Text(activity.emoji)
                                 Text(activity.name)
-                                    .foregroundStyle(.secondary)
+                                    .foregroundColor(.secondary)
                                 Spacer()
                                 Button("Restore") {
-                                    activity.isArchived = false
+                                    store.restoreActivity(activity)
                                 }
                                 .font(.caption)
                             }
@@ -56,34 +45,29 @@ struct SettingsView: View {
                     }
                 }
             }
+            .listStyle(InsetGroupedListStyle())
             .navigationTitle("Settings")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    Button("Done") { dismiss() }
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button("Done") {
+                        presentationMode.wrappedValue.dismiss()
+                    }
                 }
-                ToolbarItem(placement: .topBarTrailing) {
+                ToolbarItem(placement: .navigationBarTrailing) {
                     Button {
                         showingAddActivity = true
                     } label: {
                         Image(systemName: "plus")
                     }
                 }
-                ToolbarItem(placement: .topBarTrailing) {
+                ToolbarItem(placement: .navigationBarTrailing) {
                     EditButton()
                 }
             }
             .sheet(isPresented: $showingAddActivity) {
                 ActivityEditorView(activity: nil)
             }
-        }
-    }
-
-    private func reorder(from source: IndexSet, to destination: Int) {
-        var ordered = activeActivities
-        ordered.move(fromOffsets: source, toOffset: destination)
-        for (index, activity) in ordered.enumerated() {
-            activity.sortOrder = index
         }
     }
 }

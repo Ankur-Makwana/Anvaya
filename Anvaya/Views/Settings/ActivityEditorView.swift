@@ -1,11 +1,10 @@
 import SwiftUI
-import SwiftData
 
 struct ActivityEditorView: View {
-    @Environment(\.modelContext) private var modelContext
-    @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject var store: DataStore
+    @Environment(\.presentationMode) var presentationMode
 
-    let activity: Activity?   // nil = creating new
+    let activity: Activity?
 
     @State private var name: String = ""
     @State private var subtitle: String = ""
@@ -22,45 +21,38 @@ struct ActivityEditorView: View {
     var isNew: Bool { activity == nil }
 
     var body: some View {
-        Form {
-            Section("Basic Info") {
+        let form = Form {
+            Section(header: Text("Basic Info")) {
                 TextField("Name", text: $name)
                 TextField("Subtitle (optional)", text: $subtitle)
                 TextField("Emoji", text: $emoji)
-                    .onChange(of: emoji) { _, newValue in
-                        // Limit to one character/emoji
-                        if newValue.count > 1 {
-                            emoji = String(newValue.suffix(1))
-                        }
-                    }
             }
 
             if isNew {
-                Section("Tracking Type") {
+                Section(header: Text("Tracking Type")) {
                     Picker("Type", selection: $trackingType) {
                         ForEach(TrackingType.allCases) { type in
                             Text(type.rawValue).tag(type)
                         }
                     }
-                    .pickerStyle(.menu)
                 }
             } else {
-                Section("Tracking Type") {
+                Section(header: Text("Tracking Type")) {
                     Text(trackingType.rawValue)
-                        .foregroundStyle(.secondary)
+                        .foregroundColor(.secondary)
                 }
             }
 
             // Type-specific config
-            switch trackingType {
-            case .counter:
-                Section("Counter Goal") {
+            if trackingType == .counter {
+                Section(header: Text("Counter Goal")) {
                     TextField("Goal (e.g., 4)", text: $counterGoal)
                         .keyboardType(.numberPad)
                 }
+            }
 
-            case .singleSelect:
-                Section("Options") {
+            if trackingType == .singleSelect {
+                Section(header: Text("Options")) {
                     ForEach(options, id: \.self) { option in
                         Text(option)
                     }
@@ -78,9 +70,10 @@ struct ActivityEditorView: View {
                         .disabled(newOption.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                     }
                 }
+            }
 
-            case .multiSelect:
-                Section("Tags") {
+            if trackingType == .multiSelect {
+                Section(header: Text("Tags")) {
                     ForEach(tags, id: \.self) { tag in
                         Text(tag)
                     }
@@ -98,9 +91,10 @@ struct ActivityEditorView: View {
                         .disabled(newTag.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                     }
                 }
+            }
 
-            case .duration:
-                Section("Duration Presets (minutes)") {
+            if trackingType == .duration {
+                Section(header: Text("Duration Presets (minutes)")) {
                     ForEach(durationPresets, id: \.self) { preset in
                         Text("\(preset) min")
                     }
@@ -108,17 +102,17 @@ struct ActivityEditorView: View {
                         durationPresets.remove(atOffsets: indices)
                     }
                 }
-
-            case .yesNo:
-                EmptyView()
             }
 
             if !isNew {
                 Section {
-                    Button("Archive Activity", role: .destructive) {
-                        activity?.isArchived = true
-                        dismiss()
+                    Button("Archive Activity") {
+                        if let a = activity {
+                            store.archiveActivity(a)
+                        }
+                        presentationMode.wrappedValue.dismiss()
                     }
+                    .foregroundColor(.red)
                 }
             }
         }
@@ -126,11 +120,13 @@ struct ActivityEditorView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             if isNew {
-                ToolbarItem(placement: .topBarLeading) {
-                    Button("Cancel") { dismiss() }
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button("Cancel") {
+                        presentationMode.wrappedValue.dismiss()
+                    }
                 }
             }
-            ToolbarItem(placement: .topBarTrailing) {
+            ToolbarItem(placement: .navigationBarTrailing) {
                 Button("Save") {
                     save()
                 }
@@ -149,14 +145,21 @@ struct ActivityEditorView: View {
                 durationPresets = a.durationPresets
             }
         }
+
+        if isNew {
+            NavigationView {
+                form
+            }
+        } else {
+            form
+        }
     }
 
     private func save() {
         let trimmedName = name.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmedName.isEmpty else { return }
 
-        if let a = activity {
-            // Update existing
+        if var a = activity {
             a.name = trimmedName
             a.subtitle = subtitle
             a.emoji = emoji
@@ -164,21 +167,21 @@ struct ActivityEditorView: View {
             a.options = options
             a.tags = tags
             a.durationPresets = durationPresets
+            store.updateActivity(a)
         } else {
-            // Create new
             let newActivity = Activity(
                 name: trimmedName,
                 subtitle: subtitle,
                 emoji: emoji.isEmpty ? "📌" : emoji,
                 trackingType: trackingType,
-                sortOrder: 999,   // will appear at end
+                sortOrder: 999,
                 counterGoal: Int(counterGoal),
                 options: options,
                 tags: tags,
                 durationPresets: durationPresets
             )
-            modelContext.insert(newActivity)
+            store.addActivity(newActivity)
         }
-        dismiss()
+        presentationMode.wrappedValue.dismiss()
     }
 }

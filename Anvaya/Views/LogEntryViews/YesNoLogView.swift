@@ -1,9 +1,8 @@
 import SwiftUI
-import SwiftData
 
 struct YesNoLogView: View {
-    @Environment(\.modelContext) private var modelContext
-    @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject var store: DataStore
+    @Environment(\.presentationMode) var presentationMode
     let activity: Activity
     let existingLog: DayLog?
 
@@ -15,24 +14,30 @@ struct YesNoLogView: View {
             if let log = existingLog, log.boolValue == true {
                 Label("Logged today!", systemImage: "checkmark.circle.fill")
                     .font(.title2)
-                    .foregroundStyle(.green)
+                    .foregroundColor(.green)
 
-                Button("Remove Log", role: .destructive) {
-                    modelContext.delete(log)
-                    dismiss()
+                Button("Remove Log") {
+                    store.deleteLog(log)
+                    presentationMode.wrappedValue.dismiss()
                 }
-                .buttonStyle(.bordered)
+                .foregroundColor(.red)
+                .padding()
+                .overlay(
+                    RoundedRectangle(cornerRadius: 8)
+                        .stroke(Color.red, lineWidth: 1)
+                )
             } else {
                 Button {
                     logYes()
                 } label: {
                     Label("Done!", systemImage: "checkmark")
                         .font(.title3.bold())
+                        .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
                         .padding()
+                        .background(Color.green)
+                        .cornerRadius(12)
                 }
-                .buttonStyle(.borderedProminent)
-                .tint(.green)
             }
 
             Spacer()
@@ -47,7 +52,7 @@ struct YesNoLogView: View {
             date: Date().dayString,
             boolValue: true
         )
-        modelContext.insert(log)
-        dismiss()
+        store.addLog(log)
+        presentationMode.wrappedValue.dismiss()
     }
 }

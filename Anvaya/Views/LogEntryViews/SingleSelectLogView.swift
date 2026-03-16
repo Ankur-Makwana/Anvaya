@@ -1,9 +1,8 @@
 import SwiftUI
-import SwiftData
 
 struct SingleSelectLogView: View {
-    @Environment(\.modelContext) private var modelContext
-    @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject var store: DataStore
+    @Environment(\.presentationMode) var presentationMode
     let activity: Activity
     let existingLog: DayLog?
 
@@ -14,7 +13,6 @@ struct SingleSelectLogView: View {
             Text(activity.emoji)
                 .font(.system(size: 60))
 
-            // Option buttons
             VStack(spacing: 12) {
                 ForEach(activity.options, id: \.self) { option in
                     Button {
@@ -22,10 +20,10 @@ struct SingleSelectLogView: View {
                     } label: {
                         Text(option)
                             .font(.headline)
+                            .foregroundColor(selectedOption == option ? .white : .primary)
                             .frame(maxWidth: .infinity)
                             .padding()
                             .background(selectedOption == option ? Color.green : Color(.tertiarySystemGroupedBackground))
-                            .foregroundStyle(selectedOption == option ? .white : .primary)
                             .cornerRadius(12)
                     }
                 }
@@ -37,11 +35,12 @@ struct SingleSelectLogView: View {
             } label: {
                 Text("Save")
                     .font(.title3.bold())
+                    .foregroundColor(.white)
                     .frame(maxWidth: .infinity)
                     .padding()
+                    .background(selectedOption != nil ? Color.green : Color.gray)
+                    .cornerRadius(12)
             }
-            .buttonStyle(.borderedProminent)
-            .tint(.green)
             .disabled(selectedOption == nil)
             .padding(.horizontal)
 
@@ -56,17 +55,18 @@ struct SingleSelectLogView: View {
     private func saveLog() {
         guard let option = selectedOption else { return }
 
-        if let existing = existingLog {
+        if var existing = existingLog {
             existing.selectedOption = option
             existing.timestamp = Date()
+            store.updateLog(existing)
         } else {
             let log = DayLog(
                 activityId: activity.id,
                 date: Date().dayString,
                 selectedOption: option
             )
-            modelContext.insert(log)
+            store.addLog(log)
         }
-        dismiss()
+        presentationMode.wrappedValue.dismiss()
     }
 }

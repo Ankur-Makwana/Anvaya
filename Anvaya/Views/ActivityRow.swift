@@ -1,8 +1,7 @@
 import SwiftUI
-import SwiftData
 
 struct ActivityRow: View {
-    @Environment(\.modelContext) private var modelContext
+    @EnvironmentObject var store: DataStore
     let activity: Activity
     let todayLogs: [DayLog]
 
@@ -19,12 +18,12 @@ struct ActivityRow: View {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(activity.name)
                         .font(.headline)
-                        .foregroundStyle(.primary)
+                        .foregroundColor(.primary)
 
                     if !activity.subtitle.isEmpty {
                         Text(activity.subtitle)
                             .font(.caption)
-                            .foregroundStyle(.secondary)
+                            .foregroundColor(.secondary)
                     }
                 }
 
@@ -57,43 +56,43 @@ struct ActivityRow: View {
         case .yesNo:
             Image(systemName: isLogged ? "checkmark.circle.fill" : "circle")
                 .font(.title2)
-                .foregroundStyle(isLogged ? .green : .secondary)
+                .foregroundColor(isLogged ? .green : .secondary)
 
         case .counter:
             let count = todayLogs.last?.counterValue ?? 0
             let goal = activity.counterGoal ?? 0
             Text("\(count)/\(goal)")
                 .font(.headline.monospacedDigit())
-                .foregroundStyle(count >= goal && goal > 0 ? .green : .primary)
+                .foregroundColor(count >= goal && goal > 0 ? .green : .primary)
 
         case .duration:
             if let minutes = todayLogs.last?.durationMinutes {
                 Text("\(minutes) min")
                     .font(.subheadline)
-                    .foregroundStyle(.green)
+                    .foregroundColor(.green)
             } else {
                 Text("—")
-                    .foregroundStyle(.secondary)
+                    .foregroundColor(.secondary)
             }
 
         case .multiSelect:
             if let tags = todayLogs.last?.selectedTags, !tags.isEmpty {
                 Text("\(tags.count) logged")
                     .font(.subheadline)
-                    .foregroundStyle(.green)
+                    .foregroundColor(.green)
             } else {
                 Text("—")
-                    .foregroundStyle(.secondary)
+                    .foregroundColor(.secondary)
             }
 
         case .singleSelect:
             if let option = todayLogs.last?.selectedOption {
                 Text(option)
                     .font(.subheadline)
-                    .foregroundStyle(.green)
+                    .foregroundColor(.green)
             } else {
                 Text("—")
-                    .foregroundStyle(.secondary)
+                    .foregroundColor(.secondary)
             }
         }
     }
@@ -102,7 +101,7 @@ struct ActivityRow: View {
 
     @ViewBuilder
     private var logEntrySheet: some View {
-        NavigationStack {
+        NavigationView {
             Group {
                 switch activity.trackingType {
                 case .yesNo:
@@ -120,13 +119,12 @@ struct ActivityRow: View {
             .navigationTitle(activity.name)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
+                ToolbarItem(placement: .navigationBarLeading) {
                     Button("Cancel") {
                         showingDetail = false
                     }
                 }
             }
         }
-        .presentationDetents([.medium])
     }
 }

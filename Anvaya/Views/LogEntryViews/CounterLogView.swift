@@ -1,9 +1,8 @@
 import SwiftUI
-import SwiftData
 
 struct CounterLogView: View {
-    @Environment(\.modelContext) private var modelContext
-    @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject var store: DataStore
+    @Environment(\.presentationMode) var presentationMode
     let activity: Activity
     let existingLog: DayLog?
 
@@ -17,25 +16,23 @@ struct CounterLogView: View {
             Text(activity.emoji)
                 .font(.system(size: 60))
 
-            // Count display
             Text("\(count)")
                 .font(.system(size: 72, weight: .bold, design: .rounded))
-                .foregroundStyle(isGoalMet ? .green : .primary)
+                .foregroundColor(isGoalMet ? .green : .primary)
 
             if goal > 0 {
                 Text("Goal: \(goal)")
                     .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .foregroundColor(.secondary)
             }
 
-            // +/- buttons
             HStack(spacing: 40) {
                 Button {
                     if count > 0 { count -= 1 }
                 } label: {
                     Image(systemName: "minus.circle.fill")
                         .font(.system(size: 44))
-                        .foregroundStyle(.red.opacity(0.8))
+                        .foregroundColor(.red.opacity(0.8))
                 }
 
                 Button {
@@ -43,7 +40,7 @@ struct CounterLogView: View {
                 } label: {
                     Image(systemName: "plus.circle.fill")
                         .font(.system(size: 44))
-                        .foregroundStyle(.green)
+                        .foregroundColor(.green)
                 }
             }
 
@@ -52,11 +49,12 @@ struct CounterLogView: View {
             } label: {
                 Text("Save")
                     .font(.title3.bold())
+                    .foregroundColor(.white)
                     .frame(maxWidth: .infinity)
                     .padding()
+                    .background(Color.green)
+                    .cornerRadius(12)
             }
-            .buttonStyle(.borderedProminent)
-            .tint(.green)
 
             Spacer()
         }
@@ -68,17 +66,18 @@ struct CounterLogView: View {
     }
 
     private func saveLog() {
-        if let existing = existingLog {
+        if var existing = existingLog {
             existing.counterValue = count
             existing.timestamp = Date()
+            store.updateLog(existing)
         } else {
             let log = DayLog(
                 activityId: activity.id,
                 date: Date().dayString,
                 counterValue: count
             )
-            modelContext.insert(log)
+            store.addLog(log)
         }
-        dismiss()
+        presentationMode.wrappedValue.dismiss()
     }
 }

@@ -1,9 +1,8 @@
 import SwiftUI
-import SwiftData
 
 struct DurationLogView: View {
-    @Environment(\.modelContext) private var modelContext
-    @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject var store: DataStore
+    @Environment(\.presentationMode) var presentationMode
     let activity: Activity
     let existingLog: DayLog?
 
@@ -17,14 +16,13 @@ struct DurationLogView: View {
             if let minutes = selectedMinutes {
                 Text("\(minutes) min")
                     .font(.system(size: 48, weight: .bold, design: .rounded))
-                    .foregroundStyle(.green)
+                    .foregroundColor(.green)
             } else {
                 Text("How long?")
                     .font(.title2)
-                    .foregroundStyle(.secondary)
+                    .foregroundColor(.secondary)
             }
 
-            // Duration preset buttons
             LazyVGrid(columns: [
                 GridItem(.adaptive(minimum: 70))
             ], spacing: 12) {
@@ -34,11 +32,12 @@ struct DurationLogView: View {
                     } label: {
                         Text("\(minutes)m")
                             .font(.headline)
+                            .foregroundColor(selectedMinutes == minutes ? .white : .primary)
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 12)
+                            .background(selectedMinutes == minutes ? Color.green : Color(.tertiarySystemGroupedBackground))
+                            .cornerRadius(8)
                     }
-                    .buttonStyle(.bordered)
-                    .tint(selectedMinutes == minutes ? .green : .primary)
                 }
             }
 
@@ -47,11 +46,12 @@ struct DurationLogView: View {
             } label: {
                 Text("Save")
                     .font(.title3.bold())
+                    .foregroundColor(.white)
                     .frame(maxWidth: .infinity)
                     .padding()
+                    .background(selectedMinutes != nil ? Color.green : Color.gray)
+                    .cornerRadius(12)
             }
-            .buttonStyle(.borderedProminent)
-            .tint(.green)
             .disabled(selectedMinutes == nil)
 
             Spacer()
@@ -66,17 +66,18 @@ struct DurationLogView: View {
     private func saveLog() {
         guard let minutes = selectedMinutes else { return }
 
-        if let existing = existingLog {
+        if var existing = existingLog {
             existing.durationMinutes = minutes
             existing.timestamp = Date()
+            store.updateLog(existing)
         } else {
             let log = DayLog(
                 activityId: activity.id,
                 date: Date().dayString,
                 durationMinutes: minutes
             )
-            modelContext.insert(log)
+            store.addLog(log)
         }
-        dismiss()
+        presentationMode.wrappedValue.dismiss()
     }
 }

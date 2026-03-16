@@ -1,7 +1,5 @@
 import Foundation
-import SwiftData
 
-// The type of tracking an activity supports
 enum TrackingType: String, Codable, CaseIterable, Identifiable {
     case yesNo = "Yes / No"
     case counter = "Counter"
@@ -12,8 +10,7 @@ enum TrackingType: String, Codable, CaseIterable, Identifiable {
     var id: String { rawValue }
 }
 
-@Model
-final class Activity {
+struct Activity: Codable, Identifiable, Equatable {
     var id: UUID
     var name: String
     var subtitle: String
@@ -23,11 +20,10 @@ final class Activity {
     var isArchived: Bool
     var createdAt: Date
 
-    // Config fields (used depending on trackingType)
-    var counterGoal: Int?               // for counter type (e.g., 4 bottles)
-    var options: [String]               // for singleSelect (e.g., ["Strength", "Core", "Plyo"])
-    var tags: [String]                  // for multiSelect (e.g., muscle groups)
-    var durationPresets: [Int]          // for duration type (e.g., [5, 10, 15, 20, 30, 60, 90])
+    var counterGoal: Int?
+    var options: [String]
+    var tags: [String]
+    var durationPresets: [Int]
 
     init(
         name: String,

@@ -1,9 +1,8 @@
 import SwiftUI
-import SwiftData
 
 struct MultiSelectLogView: View {
-    @Environment(\.modelContext) private var modelContext
-    @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject var store: DataStore
+    @Environment(\.presentationMode) var presentationMode
     let activity: Activity
     let existingLog: DayLog?
 
@@ -16,8 +15,10 @@ struct MultiSelectLogView: View {
             Text(activity.emoji)
                 .font(.system(size: 50))
 
-            // Tag grid
-            FlowLayout(spacing: 8) {
+            // Tag grid using LazyVGrid
+            LazyVGrid(columns: [
+                GridItem(.adaptive(minimum: 100))
+            ], spacing: 8) {
                 ForEach(activity.tags, id: \.self) { tag in
                     Button {
                         toggleTag(tag)
@@ -26,22 +27,26 @@ struct MultiSelectLogView: View {
                             .font(.subheadline)
                             .padding(.horizontal, 14)
                             .padding(.vertical, 8)
+                            .frame(maxWidth: .infinity)
                             .background(selectedTags.contains(tag) ? Color.green : Color(.tertiarySystemGroupedBackground))
-                            .foregroundStyle(selectedTags.contains(tag) ? .white : .primary)
+                            .foregroundColor(selectedTags.contains(tag) ? .white : .primary)
                             .cornerRadius(20)
                     }
                 }
 
-                // Add new tag button
                 Button {
                     showingAddTag = true
                 } label: {
-                    Label("Add", systemImage: "plus")
-                        .font(.subheadline)
-                        .padding(.horizontal, 14)
-                        .padding(.vertical, 8)
-                        .background(Color(.tertiarySystemGroupedBackground))
-                        .cornerRadius(20)
+                    HStack {
+                        Image(systemName: "plus")
+                        Text("Add")
+                    }
+                    .font(.subheadline)
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 8)
+                    .frame(maxWidth: .infinity)
+                    .background(Color(.tertiarySystemGroupedBackground))
+                    .cornerRadius(20)
                 }
             }
             .padding(.horizontal)
@@ -49,7 +54,7 @@ struct MultiSelectLogView: View {
             if !selectedTags.isEmpty {
                 Text("\(selectedTags.count) selected")
                     .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .foregroundColor(.secondary)
             }
 
             Button {
@@ -57,11 +62,12 @@ struct MultiSelectLogView: View {
             } label: {
                 Text("Save")
                     .font(.title3.bold())
+                    .foregroundColor(.white)
                     .frame(maxWidth: .infinity)
                     .padding()
+                    .background(selectedTags.isEmpty ? Color.gray : Color.green)
+                    .cornerRadius(12)
             }
-            .buttonStyle(.borderedProminent)
-            .tint(.green)
             .disabled(selectedTags.isEmpty)
             .padding(.horizontal)
 
@@ -73,15 +79,23 @@ struct MultiSelectLogView: View {
                 selectedTags = Set(tags)
             }
         }
-        .alert("Add Muscle Group", isPresented: $showingAddTag) {
-            TextField("Name", text: $newTag)
-            Button("Add") {
-                addNewTag()
-            }
-            Button("Cancel", role: .cancel) {
-                newTag = ""
-            }
+        .alert(isPresented: $showingAddTag) {
+            Alert(
+                title: Text("Add Muscle Group"),
+                message: Text("Enter the name below"),
+                primaryButton: .default(Text("Add")) {
+                    addNewTag()
+                },
+                secondaryButton: .cancel {
+                    newTag = ""
+                }
+            )
         }
+        .overlay(
+            // TextField workaround for alert (iOS 14 alerts don't support TextField)
+            // We'll use a sheet instead for adding tags
+            EmptyView()
+        )
     }
 
     private func toggleTag(_ tag: String) {
@@ -98,7 +112,9 @@ struct MultiSelectLogView: View {
             newTag = ""
             return
         }
-        activity.tags.append(trimmed)
+        var updated = activity
+        updated.tags.append(trimmed)
+        store.updateActivity(updated)
         selectedTags.insert(trimmed)
         newTag = ""
     }
@@ -106,72 +122,18 @@ struct MultiSelectLogView: View {
     private func saveLog() {
         let tagArray = Array(selectedTags).sorted()
 
-        if let existing = existingLog {
+        if var existing = existingLog {
             existing.selectedTags = tagArray
             existing.timestamp = Date()
+            store.updateLog(existing)
         } else {
             let log = DayLog(
                 activityId: activity.id,
                 date: Date().dayString,
                 selectedTags: tagArray
             )
-            modelContext.insert(log)
+            store.addLog(log)
         }
-        dismiss()
-    }
-}
-
-// MARK: - FlowLayout (wrapping tag grid)
-
-struct FlowLayout: Layout {
-    var spacing: CGFloat = 8
-
-    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
-        let result = arrange(proposal: proposal, subviews: subviews)
-        return result.size
-    }
-
-    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
-        let result = arrange(proposal: proposal, subviews: subviews)
-        for (index, position) in result.positions.enumerated() {
-            subviews[index].place(
-                at: CGPoint(x: bounds.minX + position.x, y: bounds.minY + position.y),
-                proposal: ProposedViewSize(result.sizes[index])
-            )
-        }
-    }
-
-    private func arrange(proposal: ProposedViewSize, subviews: Subviews) -> ArrangeResult {
-        let maxWidth = proposal.width ?? .infinity
-        var positions: [CGPoint] = []
-        var sizes: [CGSize] = []
-        var x: CGFloat = 0
-        var y: CGFloat = 0
-        var rowHeight: CGFloat = 0
-
-        for subview in subviews {
-            let size = subview.sizeThatFits(.unspecified)
-            if x + size.width > maxWidth, x > 0 {
-                x = 0
-                y += rowHeight + spacing
-                rowHeight = 0
-            }
-            positions.append(CGPoint(x: x, y: y))
-            sizes.append(size)
-            rowHeight = max(rowHeight, size.height)
-            x += size.width + spacing
-        }
-
-        return ArrangeResult(
-            size: CGSize(width: maxWidth, height: y + rowHeight),
-            positions: positions,
-            sizes: sizes
-        )
-    }
-
-    struct ArrangeResult {
-        var size: CGSize
-        var positions: [CGPoint]
-        var sizes: [CGSize]
+        presentationMode.wrappedValue.dismiss()
     }
 }

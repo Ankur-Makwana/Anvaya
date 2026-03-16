@@ -1,19 +1,16 @@
 import Foundation
-import SwiftData
 
-@Model
-final class DayLog {
+struct DayLog: Codable, Identifiable, Equatable {
     var id: UUID
     var activityId: UUID
-    var date: String                    // "2026-03-13" — just the day for easy grouping
+    var date: String                    // "2026-03-13" for grouping by day
     var timestamp: Date                 // exact time of logging
 
-    // Value fields — only one is used per entry, based on activity's trackingType
-    var boolValue: Bool?                // yesNo
-    var counterValue: Int?              // counter
-    var durationMinutes: Int?           // duration
-    var selectedTags: [String]?         // multiSelect
-    var selectedOption: String?         // singleSelect
+    var boolValue: Bool?
+    var counterValue: Int?
+    var durationMinutes: Int?
+    var selectedTags: [String]?
+    var selectedOption: String?
 
     init(
         activityId: UUID,
