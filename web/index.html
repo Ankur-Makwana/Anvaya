@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Anvaya">
+    <meta name="theme-color" content="#FAF7F2">
+    <title>Anvaya</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-content">
+                <h1 class="app-title">Anvaya</h1>
+                <p class="app-subtitle">Small Habits. Meaningful Change.</p>
+                <p class="app-date" id="todayDate"></p>
+            </div>
+            <button class="settings-btn" onclick="app.showSettings()" aria-label="Settings">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="3"></circle>
+                    <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path>
+                </svg>
+            </button>
+        </header>
+
+        <!-- Activity List -->
+        <main class="activity-list" id="activityList">
+            <!-- Rendered by JS -->
+        </main>
+
+        <!-- Bottom safe area spacer for iOS -->
+        <div class="bottom-spacer"></div>
+    </div>
+
+    <!-- Log Entry Modal -->
+    <div class="modal-overlay" id="modalOverlay" onclick="app.closeModal()">
+        <div class="modal" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <button class="modal-close" onclick="app.closeModal()">Cancel</button>
+                <h2 class="modal-title" id="modalTitle"></h2>
+                <div style="width:60px"></div>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Rendered by JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div class="modal-overlay" id="settingsOverlay" onclick="app.closeSettings()">
+        <div class="modal modal-full" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <button class="modal-close" onclick="app.closeSettings()">Done</button>
+                <h2 class="modal-title">Settings</h2>
+                <button class="modal-action" onclick="app.showAddActivity()">+ New</button>
+            </div>
+            <div class="modal-body" id="settingsBody">
+                <!-- Rendered by JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Activity Modal -->
+    <div class="modal-overlay" id="editActivityOverlay" onclick="app.closeEditActivity()">
+        <div class="modal modal-full" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <button class="modal-close" onclick="app.closeEditActivity()">Cancel</button>
+                <h2 class="modal-title" id="editActivityTitle">New Activity</h2>
+                <button class="modal-action" id="editActivitySave" onclick="app.saveActivity()">Save</button>
+            </div>
+            <div class="modal-body" id="editActivityBody">
+                <!-- Rendered by JS -->
+            </div>
+        </div>
+    </div>
+
+    <script src="store.js"></script>
+    <script src="app.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js');
+        }
+    </script>
+</body>
+</html>

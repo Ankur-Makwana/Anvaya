@@ -1,0 +1,651 @@
+/* ===== Design Tokens ===== */
+:root {
+    --bg: #FAF7F2;
+    --bg-card: #FFFFFF;
+    --bg-card-logged: #F0FAF6;
+    --mint: #7EC8B8;
+    --mint-light: #E8F6F1;
+    --lavender: #C4B4D8;
+    --lavender-light: #F0EBF5;
+    --peach: #F0D5C0;
+    --peach-light: #FBF0E8;
+    --text-primary: #2D2D2D;
+    --text-secondary: #8E8E93;
+    --text-light: #B0B0B0;
+    --border: #E8E4DF;
+    --shadow: 0 2px 12px rgba(0,0,0,0.06);
+    --shadow-lg: 0 8px 30px rgba(0,0,0,0.1);
+    --radius: 18px;
+    --radius-sm: 12px;
+    --radius-pill: 50px;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+/* ===== Reset & Base ===== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--text-primary);
+    min-height: 100vh;
+    min-height: 100dvh;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* ===== App Shell ===== */
+#app {
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 0 16px;
+    padding-top: env(safe-area-inset-top, 20px);
+}
+
+/* ===== Header ===== */
+.app-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 24px 0 16px;
+}
+
+.app-title {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: -0.5px;
+}
+
+.app-subtitle {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-top: 2px;
+}
+
+.app-date {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--mint);
+    margin-top: 6px;
+}
+
+.settings-btn {
+    background: var(--bg-card);
+    border: none;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: var(--shadow);
+    color: var(--text-secondary);
+    transition: transform 0.2s;
+    flex-shrink: 0;
+    margin-top: 4px;
+}
+
+.settings-btn:active {
+    transform: scale(0.92);
+}
+
+/* ===== Activity Cards ===== */
+.activity-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding-bottom: 20px;
+}
+
+.activity-card {
+    background: var(--bg-card);
+    border-radius: var(--radius);
+    padding: 16px 18px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    box-shadow: var(--shadow);
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+    border: 1.5px solid transparent;
+}
+
+.activity-card:active {
+    transform: scale(0.98);
+}
+
+.activity-card.logged {
+    background: var(--bg-card-logged);
+    border-color: rgba(126, 200, 184, 0.25);
+}
+
+.activity-emoji {
+    font-size: 28px;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--peach-light);
+    border-radius: var(--radius-sm);
+    flex-shrink: 0;
+}
+
+.activity-card.logged .activity-emoji {
+    background: var(--mint-light);
+}
+
+.activity-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.activity-name {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.activity-subtitle {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: 1px;
+}
+
+.activity-status {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-light);
+    flex-shrink: 0;
+}
+
+.activity-card.logged .activity-status {
+    color: var(--mint);
+}
+
+/* ===== Modal ===== */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.3);
+    z-index: 100;
+    align-items: flex-end;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+}
+
+.modal-overlay.open {
+    display: flex;
+}
+
+.modal {
+    background: var(--bg);
+    border-radius: 24px 24px 0 0;
+    width: 100%;
+    max-width: 480px;
+    max-height: 85vh;
+    overflow-y: auto;
+    padding-bottom: env(safe-area-inset-bottom, 20px);
+    animation: slideUp 0.3s ease;
+}
+
+.modal-full {
+    max-height: 92vh;
+}
+
+@keyframes slideUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 20px 12px;
+    position: sticky;
+    top: 0;
+    background: var(--bg);
+    z-index: 1;
+    border-bottom: 1px solid var(--border);
+}
+
+.modal-title {
+    font-size: 17px;
+    font-weight: 600;
+}
+
+.modal-close, .modal-action {
+    background: none;
+    border: none;
+    font-size: 15px;
+    font-family: var(--font);
+    cursor: pointer;
+    padding: 4px 8px;
+    color: var(--mint);
+    font-weight: 500;
+    min-width: 60px;
+}
+
+.modal-close {
+    text-align: left;
+}
+
+.modal-action {
+    text-align: right;
+    font-weight: 600;
+}
+
+.modal-body {
+    padding: 20px;
+}
+
+/* ===== Log Entry Shared Styles ===== */
+.log-emoji {
+    font-size: 48px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.log-section-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-align: center;
+    margin-bottom: 12px;
+}
+
+/* Option buttons (single select) */
+.option-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.option-btn {
+    background: var(--bg-card);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 14px;
+    font-size: 16px;
+    font-weight: 600;
+    font-family: var(--font);
+    cursor: pointer;
+    transition: all 0.15s;
+    text-align: center;
+}
+
+.option-btn.selected {
+    background: var(--mint);
+    border-color: var(--mint);
+    color: white;
+}
+
+.option-btn:active {
+    transform: scale(0.97);
+}
+
+/* Duration presets */
+.duration-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.duration-btn {
+    background: var(--bg-card);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 12px;
+    font-size: 15px;
+    font-weight: 600;
+    font-family: var(--font);
+    cursor: pointer;
+    transition: all 0.15s;
+    text-align: center;
+}
+
+.duration-btn.selected {
+    background: var(--mint);
+    border-color: var(--mint);
+    color: white;
+}
+
+.duration-btn:active {
+    transform: scale(0.95);
+}
+
+/* Tag pills (multi select) */
+.tag-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.tag-btn {
+    background: var(--bg-card);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-pill);
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    font-family: var(--font);
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.tag-btn.selected {
+    background: var(--mint);
+    border-color: var(--mint);
+    color: white;
+}
+
+.tag-btn.add-tag {
+    border-style: dashed;
+    color: var(--text-secondary);
+}
+
+.tag-btn:active {
+    transform: scale(0.95);
+}
+
+/* Counter */
+.counter-display {
+    text-align: center;
+    margin-bottom: 8px;
+}
+
+.counter-number {
+    font-size: 64px;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1;
+}
+
+.counter-number.goal-met {
+    color: var(--mint);
+}
+
+.counter-goal {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-top: 4px;
+}
+
+.counter-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    margin: 20px 0;
+}
+
+.counter-btn {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    border: none;
+    font-size: 28px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.15s;
+}
+
+.counter-btn:active {
+    transform: scale(0.9);
+}
+
+.counter-btn.minus {
+    background: var(--peach-light);
+    color: #D4836A;
+}
+
+.counter-btn.plus {
+    background: var(--mint-light);
+    color: var(--mint);
+}
+
+/* Yes/No */
+.yesno-status {
+    text-align: center;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--mint);
+    margin-bottom: 16px;
+}
+
+/* Save button */
+.save-btn {
+    background: var(--mint);
+    color: white;
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 16px;
+    font-size: 16px;
+    font-weight: 600;
+    font-family: var(--font);
+    width: 100%;
+    cursor: pointer;
+    transition: all 0.15s;
+    margin-top: 8px;
+}
+
+.save-btn:disabled {
+    background: var(--border);
+    color: var(--text-light);
+}
+
+.save-btn:not(:disabled):active {
+    transform: scale(0.97);
+}
+
+.save-btn.danger {
+    background: none;
+    color: #D4836A;
+    border: 1.5px solid #D4836A;
+    margin-top: 12px;
+}
+
+/* Selected duration/value display */
+.selected-value {
+    text-align: center;
+    font-size: 40px;
+    font-weight: 700;
+    color: var(--mint);
+    margin-bottom: 4px;
+}
+
+.selected-label {
+    text-align: center;
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-bottom: 16px;
+}
+
+/* Step indicator for multi-step flows */
+.step-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--mint-light);
+    color: var(--mint);
+    border-radius: var(--radius-pill);
+    padding: 6px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 16px;
+}
+
+.step-badge .change-btn {
+    background: none;
+    border: none;
+    color: var(--lavender);
+    font-family: var(--font);
+    font-size: 12px;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+/* ===== Settings ===== */
+.settings-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    background: var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+}
+
+.settings-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    background: var(--bg-card);
+}
+
+.settings-item-emoji {
+    font-size: 22px;
+}
+
+.settings-item-name {
+    flex: 1;
+    font-size: 15px;
+    font-weight: 500;
+}
+
+.settings-item-type {
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.settings-section-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 20px 0 8px;
+}
+
+.settings-section-title:first-child {
+    margin-top: 0;
+}
+
+/* ===== Edit Activity Form ===== */
+.form-group {
+    margin-bottom: 16px;
+}
+
+.form-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+    display: block;
+}
+
+.form-input, .form-select {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 15px;
+    font-family: var(--font);
+    background: var(--bg-card);
+    color: var(--text-primary);
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.form-input:focus, .form-select:focus {
+    border-color: var(--mint);
+}
+
+.form-input::placeholder {
+    color: var(--text-light);
+}
+
+.form-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 8px;
+}
+
+.form-chip {
+    background: var(--mint-light);
+    color: var(--mint);
+    border-radius: var(--radius-pill);
+    padding: 6px 12px;
+    font-size: 13px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.form-chip-remove {
+    background: none;
+    border: none;
+    color: var(--mint);
+    cursor: pointer;
+    font-size: 16px;
+    padding: 0;
+    line-height: 1;
+}
+
+.form-add-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.form-add-row .form-input {
+    flex: 1;
+}
+
+.form-add-btn {
+    background: var(--mint);
+    color: white;
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 0 16px;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: var(--font);
+    cursor: pointer;
+}
+
+/* ===== Add Tag Sheet ===== */
+.add-tag-sheet {
+    padding: 20px;
+}
+
+.add-tag-sheet .form-input {
+    margin-bottom: 12px;
+}
+
+/* ===== Bottom spacer ===== */
+.bottom-spacer {
+    height: env(safe-area-inset-bottom, 20px);
+}
+
+/* ===== Scrollbar ===== */
+::-webkit-scrollbar {
+    width: 0;
+}
