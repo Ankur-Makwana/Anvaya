@@ -1,6 +1,55 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="192" height="192" viewBox="0 0 192 192">
-  <rect width="192" height="192" rx="40" fill="#FAF7F2"/>
-  <circle cx="96" cy="86" r="40" fill="#7EC8B8" opacity="0.2"/>
-  <text x="96" y="105" font-family="Arial" font-size="56" font-weight="bold" fill="#7EC8B8" text-anchor="middle">A</text>
-  <text x="96" y="150" font-family="Arial" font-size="14" font-weight="600" fill="#8E8E93" text-anchor="middle">anvaya</text>
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#F7D5C4"/>
+      <stop offset="100%" style="stop-color:#F0BDA8"/>
+    </linearGradient>
+    <linearGradient id="ink" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#5B3A29"/>
+      <stop offset="100%" style="stop-color:#3D2518"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="192" height="192" rx="42" fill="url(#bg)"/>
+
+  <!-- Subtle inner glow -->
+  <rect x="8" y="8" width="176" height="176" rx="36" fill="none" stroke="#FFFFFF" stroke-width="0.5" opacity="0.3"/>
+
+  <!-- Shirorekha (top horizontal line - Devanagari style) -->
+  <line x1="42" y1="48" x2="150" y2="48" stroke="url(#ink)" stroke-width="4" stroke-linecap="round"/>
+
+  <!-- Decorative end flourishes on shirorekha -->
+  <circle cx="42" cy="48" r="3" fill="url(#ink)"/>
+  <circle cx="150" cy="48" r="3" fill="url(#ink)"/>
+
+  <!-- Left stroke with curve -->
+  <path d="M 70 48 L 70 62 Q 70 78 58 94 Q 48 108 52 124 Q 56 138 68 142"
+        stroke="url(#ink)" stroke-width="4.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Right stroke with curve -->
+  <path d="M 122 48 L 122 62 Q 122 78 134 94 Q 142 108 138 124 Q 134 138 124 142"
+        stroke="url(#ink)" stroke-width="4.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Center vertical stem -->
+  <path d="M 96 48 L 96 138" stroke="url(#ink)" stroke-width="4" stroke-linecap="round"/>
+
+  <!-- Crossbar with slight curve -->
+  <path d="M 62 95 Q 78 88 96 90 Q 114 88 130 95"
+        stroke="url(#ink)" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+
+  <!-- Bottom decorative curve connecting legs -->
+  <path d="M 68 142 Q 80 150 96 148 Q 112 150 124 142"
+        stroke="url(#ink)" stroke-width="3" fill="none" stroke-linecap="round"/>
+
+  <!-- Bindu dot ornament (classic Sanskrit element) -->
+  <circle cx="96" cy="68" r="4" fill="url(#ink)"/>
+
+  <!-- Small flanking dots -->
+  <circle cx="78" cy="120" r="2" fill="url(#ink)" opacity="0.5"/>
+  <circle cx="114" cy="120" r="2" fill="url(#ink)" opacity="0.5"/>
+
+  <!-- "anvaya" text at bottom -->
+  <text x="96" y="172" font-family="Georgia, 'Times New Roman', serif" font-size="16" font-weight="400"
+        fill="#5B3A29" text-anchor="middle" letter-spacing="3" opacity="0.7">anvaya</text>
 </svg>

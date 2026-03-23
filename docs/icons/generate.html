@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head><title>Generate Icons</title></head>
+<body>
+<h2>Icon Preview & Download</h2>
+<p>Right-click each image and "Save Image As" to download the PNG.</p>
+<div id="previews"></div>
+<script>
+const sizes = [180, 192, 512];
+const svgUrl = 'icon-192.svg';
+
+fetch(svgUrl).then(r => r.text()).then(svgText => {
+    sizes.forEach(size => {
+        const canvas = document.createElement('canvas');
+        canvas.width = size;
+        canvas.height = size;
+        const ctx = canvas.getContext('2d');
+        const img = new Image();
+        const blob = new Blob([svgText], {type: 'image/svg+xml'});
+        const url = URL.createObjectURL(blob);
+        img.onload = () => {
+            ctx.drawImage(img, 0, 0, size, size);
+            URL.revokeObjectURL(url);
+
+            const png = canvas.toDataURL('image/png');
+            const container = document.createElement('div');
+            container.style.margin = '20px 0';
+
+            const label = document.createElement('h3');
+            label.textContent = `icon-${size}.png`;
+            container.appendChild(label);
+
+            const preview = document.createElement('img');
+            preview.src = png;
+            preview.style.width = size > 200 ? '200px' : size + 'px';
+            preview.style.border = '1px solid #ccc';
+            preview.style.borderRadius = '20px';
+            container.appendChild(preview);
+
+            const link = document.createElement('a');
+            link.href = png;
+            link.download = `icon-${size}.png`;
+            link.textContent = ` Download icon-${size}.png`;
+            link.style.display = 'block';
+            link.style.marginTop = '8px';
+            container.appendChild(link);
+
+            document.getElementById('previews').appendChild(container);
+        };
+        img.src = url;
+    });
+});
+</script>
+</body>
+</html>
