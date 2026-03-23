@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Anvaya Icon Preview - Rising Sprout</title>
+<style>
+  body { background: #eee; display: flex; flex-wrap: wrap; gap: 40px; padding: 40px; font-family: sans-serif; justify-content: center; }
+  .preview { text-align: center; }
+  .preview p { margin-top: 8px; color: #666; }
+  svg { border-radius: 42px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); }
+</style>
+</head>
+<body>
+
+<div class="preview">
+  <h3>Version A: Minimal Sprout</h3>
+  <svg width="192" height="192" viewBox="0 0 192 192">
+    <defs>
+      <linearGradient id="bgA" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" style="stop-color:#F5CEBB"/>
+        <stop offset="100%" style="stop-color:#EAAD94"/>
+      </linearGradient>
+    </defs>
+    <rect width="192" height="192" rx="42" fill="url(#bgA)"/>
+
+    <!-- Ground arc -->
+    <ellipse cx="96" cy="118" rx="32" ry="6" fill="#4A2C1A" opacity="0.12"/>
+
+    <!-- Stem -->
+    <path d="M 96 118 Q 94 95 96 70" stroke="#3D6B4F" stroke-width="4" fill="none" stroke-linecap="round"/>
+
+    <!-- Left leaf -->
+    <path d="M 96 88 Q 74 72 72 58 Q 80 62 96 82" fill="#5A9E6F" opacity="0.9"/>
+
+    <!-- Right leaf -->
+    <path d="M 96 76 Q 118 56 124 44 Q 118 52 96 70" fill="#7EC8B8" opacity="0.9"/>
+
+    <!-- Tiny top bud -->
+    <ellipse cx="96" cy="66" rx="4" ry="6" fill="#5A9E6F" transform="rotate(-5, 96, 66)"/>
+
+    <!-- anvaya text -->
+    <text x="96" y="152" font-family="Georgia, serif" font-size="17" font-style="italic"
+          fill="#4A2C1A" text-anchor="middle" letter-spacing="4" opacity="0.75">anvaya</text>
+  </svg>
+  <p>Clean, simple sprout with two leaves</p>
+</div>
+
+<div class="preview">
+  <h3>Version B: Curved Growth</h3>
+  <svg width="192" height="192" viewBox="0 0 192 192">
+    <defs>
+      <linearGradient id="bgB" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" style="stop-color:#F5CEBB"/>
+        <stop offset="100%" style="stop-color:#EAAD94"/>
+      </linearGradient>
+    </defs>
+    <rect width="192" height="192" rx="42" fill="url(#bgB)"/>
+
+    <!-- Curved stem growing upward -->
+    <path d="M 88 120 Q 82 100 86 80 Q 90 60 100 48" stroke="#3D6B4F" stroke-width="4" fill="none" stroke-linecap="round"/>
+
+    <!-- Leaf 1 - left, lower -->
+    <path d="M 84 96 Q 60 84 54 72 Q 66 80 86 92" fill="#5A9E6F"/>
+
+    <!-- Leaf 2 - right, upper -->
+    <path d="M 92 72 Q 116 54 128 48 Q 118 58 94 68" fill="#7EC8B8"/>
+
+    <!-- Leaf 3 - small left at top -->
+    <path d="M 97 56 Q 84 44 80 36 Q 88 42 98 54" fill="#5A9E6F" opacity="0.7"/>
+
+    <!-- Small root lines -->
+    <path d="M 88 120 Q 82 128 76 132" stroke="#4A2C1A" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.3"/>
+    <path d="M 88 120 Q 94 128 100 130" stroke="#4A2C1A" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.3"/>
+
+    <!-- anvaya text -->
+    <text x="96" y="156" font-family="Georgia, serif" font-size="17" font-style="italic"
+          fill="#4A2C1A" text-anchor="middle" letter-spacing="4" opacity="0.75">anvaya</text>
+  </svg>
+  <p>More organic, with roots and 3 leaves</p>
+</div>
+
+<div class="preview">
+  <h3>Version C: Circle + Sprout</h3>
+  <svg width="192" height="192" viewBox="0 0 192 192">
+    <defs>
+      <linearGradient id="bgC" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" style="stop-color:#F5CEBB"/>
+        <stop offset="100%" style="stop-color:#EAAD94"/>
+      </linearGradient>
+    </defs>
+    <rect width="192" height="192" rx="42" fill="url(#bgC)"/>
+
+    <!-- Circle frame -->
+    <circle cx="96" cy="82" r="40" fill="none" stroke="#4A2C1A" stroke-width="2.5" opacity="0.2"/>
+
+    <!-- Stem from bottom of circle -->
+    <path d="M 96 122 Q 96 100 96 72" stroke="#3D6B4F" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+
+    <!-- Left leaf curving out of circle -->
+    <path d="M 96 90 Q 70 70 62 54 Q 74 66 96 84" fill="#5A9E6F"/>
+
+    <!-- Right leaf curving out of circle -->
+    <path d="M 96 78 Q 122 58 132 46 Q 122 58 96 72" fill="#7EC8B8"/>
+
+    <!-- Top small leaf/bud breaking out of circle -->
+    <path d="M 96 68 Q 90 50 86 40 Q 94 48 97 64" fill="#5A9E6F" opacity="0.8"/>
+
+    <!-- Dot at top (bindu - Sanskrit element) -->
+    <circle cx="96" cy="42" r="3" fill="#4A2C1A" opacity="0.4"/>
+
+    <!-- anvaya text -->
+    <text x="96" y="154" font-family="Georgia, serif" font-size="17" font-style="italic"
+          fill="#4A2C1A" text-anchor="middle" letter-spacing="4" opacity="0.75">anvaya</text>
+  </svg>
+  <p>Sprout inside a circle (growth breaking through)</p>
+</div>
+
+</body>
+</html>
