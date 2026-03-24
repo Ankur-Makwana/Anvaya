@@ -62,16 +62,51 @@ body {
 .onboarding {
     position: fixed; inset: 0; z-index: 998;
     background: var(--bg);
-    display: flex; align-items: center; justify-content: center;
-    padding: 24px;
     overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
-.onboarding-card { width: 100%; max-width: 400px; text-align: center; }
+.onboarding-card {
+    width: 100%; max-width: 400px; text-align: center;
+    margin: 0 auto;
+    padding: 24px;
+    min-height: 100vh; min-height: 100dvh;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+}
+
+.onboarding-schedule {
+    width: 100%; max-width: 440px;
+    margin: 0 auto;
+    padding: 0 16px;
+    padding-bottom: 40px;
+}
+
+.onboarding-schedule-header {
+    text-align: center;
+    padding: 24px 0 8px;
+    position: sticky;
+    top: 0;
+    background: var(--bg);
+    z-index: 2;
+    padding-top: env(safe-area-inset-top, 24px);
+}
+
+.onboarding-schedule-list {
+    padding-top: 8px;
+}
+
+.onboarding-schedule-footer {
+    padding: 16px 0 env(safe-area-inset-bottom, 20px);
+    position: sticky;
+    bottom: 0;
+    background: linear-gradient(to top, var(--bg) 70%, transparent);
+    padding-top: 24px;
+}
+
 .onboarding-step { margin-bottom: 24px; }
-.onboarding-step-label { font-size: 13px; color: var(--text-secondary); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
-.onboarding h2 { font-size: 26px; font-weight: 700; margin: 16px 0 8px; }
-.onboarding p { font-size: 15px; color: var(--text-secondary); margin-bottom: 24px; }
+.onboarding-step-label { font-size: 13px; color: var(--text-secondary); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+.onboarding h2 { font-size: 26px; font-weight: 700; margin: 8px 0 8px; }
+.onboarding p { font-size: 15px; color: var(--text-secondary); margin-bottom: 16px; line-height: 1.4; }
 
 .onboarding-input {
     width: 100%; padding: 16px;
@@ -127,14 +162,27 @@ body {
 
 /* Onboarding activity card */
 .onboarding-activity {
-    background: var(--bg-card); border-radius: var(--radius);
-    padding: 16px; margin-bottom: 12px; box-shadow: var(--shadow);
+    background: var(--bg-card);
+    border-radius: var(--radius);
+    padding: 16px; margin-bottom: 12px;
+    box-shadow: var(--shadow);
     text-align: left;
+    border: 1px solid rgba(0,0,0,0.04);
 }
 
-.onboarding-activity-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
-.onboarding-activity-icon { width: 32px; height: 32px; color: var(--mint); }
-.onboarding-activity-name { font-size: 16px; font-weight: 600; }
+.onboarding-activity-header {
+    display: flex; align-items: center; gap: 10px; margin-bottom: 12px;
+}
+
+.onboarding-activity-icon {
+    width: 32px; height: 32px; color: var(--mint);
+    flex-shrink: 0;
+}
+
+.onboarding-activity-name {
+    font-size: 16px; font-weight: 600;
+    overflow: hidden; text-overflow: ellipsis;
+}
 
 /* ===== Main App ===== */
 #app {

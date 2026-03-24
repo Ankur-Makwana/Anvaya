@@ -33,6 +33,7 @@ const app = {
         const el = document.getElementById('onboarding');
         el.classList.remove('hidden');
         this.onboardingStep = 1;
+        this.onboardingCadences = null;
         this.renderOnboarding();
     },
 
@@ -55,41 +56,64 @@ const app = {
                 if (input) input.focus();
             }, 100);
         } else if (this.onboardingStep === 2) {
-            this.onboardingCadences = {};
-            store.activeActivities().forEach(a => {
-                this.onboardingCadences[a.id] = a.cadence ? [...a.cadence] : ALL_DAYS.slice();
-            });
-            const activities = store.activeActivities();
-            content.innerHTML = `
-                <div class="onboarding-card" style="text-align:left">
-                    <div class="onboarding-step" style="text-align:center">
-                        <div class="onboarding-step-label">Step 2 of 2</div>
-                    </div>
-                    <h2 style="text-align:center">Set your schedule</h2>
-                    <p style="text-align:center">When do you do each activity?</p>
-                    ${activities.map(a => `
-                        <div class="onboarding-activity" data-id="${a.id}">
-                            <div class="onboarding-activity-header">
-                                <div class="onboarding-activity-icon">${getIcon(a.icon || 'default')}</div>
-                                <div class="onboarding-activity-name">${a.name}</div>
-                            </div>
-                            <div class="cadence-presets">
-                                <button class="cadence-preset-btn ${this.isCadencePreset(a.id, ALL_DAYS) ? 'selected' : ''}" onclick="app.setCadencePreset('${a.id}', 'all')">Every day</button>
-                                <button class="cadence-preset-btn ${this.isCadencePreset(a.id, WEEKDAYS) ? 'selected' : ''}" onclick="app.setCadencePreset('${a.id}', 'weekdays')">Weekdays</button>
-                                <button class="cadence-preset-btn ${this.isCadencePreset(a.id, MWF) ? 'selected' : ''}" onclick="app.setCadencePreset('${a.id}', 'mwf')">M/W/F</button>
-                            </div>
-                            <div class="day-bubbles" id="bubbles-${a.id}">
-                                ${DAYS_SHORT.map((d, i) => `
-                                    <div class="day-bubble ${(this.onboardingCadences[a.id] || []).includes(i) ? 'active' : ''}" onclick="app.toggleOnboardingDay('${a.id}', ${i})">${d}</div>
-                                `).join('')}
-                            </div>
-                        </div>
-                    `).join('')}
-                    <button class="onboarding-btn" onclick="app.finishOnboarding()" style="margin-top:16px">Let's go!</button>
-                    <button class="onboarding-skip" onclick="app.finishOnboarding()">Skip - I'll set this later</button>
-                </div>
-            `;
+            // Only initialize cadences ONCE when entering step 2
+            if (!this.onboardingCadences) {
+                this.onboardingCadences = {};
+                store.activeActivities().forEach(a => {
+                    this.onboardingCadences[a.id] = a.cadence ? [...a.cadence] : ALL_DAYS.slice();
+                });
+            }
+            this.renderOnboardingStep2();
         }
+    },
+
+    renderOnboardingStep2() {
+        const content = document.getElementById('onboardingContent');
+        const profile = store.getUserProfile();
+        const name = profile ? profile.name.split(' ')[0] : '';
+        const activities = store.activeActivities();
+        const colors = ['#E8F6F1', '#FBF0E8', '#F0EBF5', '#FDE8D0', '#E8F0FB', '#F5E8E8', '#E8F5E9', '#FFF3E0', '#F3E5F5'];
+
+        content.innerHTML = `
+            <div class="onboarding-schedule">
+                <div class="onboarding-schedule-header">
+                    <div class="onboarding-step-label">Step 2 of 2</div>
+                    <h2>Nice to meet you, ${name}!</h2>
+                    <p>Let's set up when you do each activity. Tap the days or pick a preset. You can always change this later.</p>
+                </div>
+                <div class="onboarding-schedule-list">
+                    ${activities.map((a, idx) => {
+                        const bgColor = colors[idx % colors.length];
+                        const cadence = this.onboardingCadences[a.id] || [];
+                        const isAll = this.isCadencePreset(a.id, ALL_DAYS);
+                        const isWeekdays = this.isCadencePreset(a.id, WEEKDAYS);
+                        const isMWF = this.isCadencePreset(a.id, MWF);
+                        return `
+                            <div class="onboarding-activity" style="background:${bgColor}">
+                                <div class="onboarding-activity-header">
+                                    <div class="onboarding-activity-icon">${getIcon(a.icon || 'default')}</div>
+                                    <div class="onboarding-activity-name">${a.name}</div>
+                                </div>
+                                <div class="cadence-presets">
+                                    <button type="button" class="cadence-preset-btn ${isAll ? 'selected' : ''}" onclick="app.setCadencePreset('${a.id}', 'all')">Every day</button>
+                                    <button type="button" class="cadence-preset-btn ${isWeekdays ? 'selected' : ''}" onclick="app.setCadencePreset('${a.id}', 'weekdays')">Weekdays</button>
+                                    <button type="button" class="cadence-preset-btn ${isMWF ? 'selected' : ''}" onclick="app.setCadencePreset('${a.id}', 'mwf')">M/W/F</button>
+                                </div>
+                                <div class="day-bubbles">
+                                    ${DAYS_SHORT.map((d, i) => `
+                                        <div class="day-bubble ${cadence.includes(i) ? 'active' : ''}" onclick="app.toggleOnboardingDay('${a.id}', ${i})">${d}</div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+                <div class="onboarding-schedule-footer">
+                    <button class="onboarding-btn" onclick="app.finishOnboarding()">Let's go!</button>
+                    <button class="onboarding-skip" onclick="app.finishOnboarding()">Skip for now</button>
+                </div>
+            </div>
+        `;
     },
 
     isCadencePreset(activityId, preset) {
@@ -102,14 +126,15 @@ const app = {
         if (preset === 'all') this.onboardingCadences[activityId] = ALL_DAYS.slice();
         else if (preset === 'weekdays') this.onboardingCadences[activityId] = WEEKDAYS.slice();
         else if (preset === 'mwf') this.onboardingCadences[activityId] = MWF.slice();
-        this.renderOnboarding();
+        this.renderOnboardingStep2();
     },
 
     toggleOnboardingDay(activityId, day) {
         const c = this.onboardingCadences[activityId];
+        if (!c) return;
         const idx = c.indexOf(day);
         if (idx >= 0) c.splice(idx, 1); else c.push(day);
-        this.renderOnboarding();
+        this.renderOnboardingStep2();
     },
 
     onboardingNext() {
