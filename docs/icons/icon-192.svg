@@ -1,55 +1,28 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="192" height="192" viewBox="0 0 192 192">
   <defs>
     <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#F7D5C4"/>
-      <stop offset="100%" style="stop-color:#F0BDA8"/>
-    </linearGradient>
-    <linearGradient id="ink" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" style="stop-color:#5B3A29"/>
-      <stop offset="100%" style="stop-color:#3D2518"/>
+      <stop offset="0%" style="stop-color:#F5CEBB"/>
+      <stop offset="100%" style="stop-color:#EAAD94"/>
     </linearGradient>
   </defs>
-
-  <!-- Background -->
   <rect width="192" height="192" rx="42" fill="url(#bg)"/>
 
-  <!-- Subtle inner glow -->
-  <rect x="8" y="8" width="176" height="176" rx="36" fill="none" stroke="#FFFFFF" stroke-width="0.5" opacity="0.3"/>
+  <!-- Ground arc -->
+  <ellipse cx="96" cy="118" rx="32" ry="6" fill="#4A2C1A" opacity="0.12"/>
 
-  <!-- Shirorekha (top horizontal line - Devanagari style) -->
-  <line x1="42" y1="48" x2="150" y2="48" stroke="url(#ink)" stroke-width="4" stroke-linecap="round"/>
+  <!-- Stem -->
+  <path d="M 96 118 Q 94 95 96 70" stroke="#3D6B4F" stroke-width="4" fill="none" stroke-linecap="round"/>
 
-  <!-- Decorative end flourishes on shirorekha -->
-  <circle cx="42" cy="48" r="3" fill="url(#ink)"/>
-  <circle cx="150" cy="48" r="3" fill="url(#ink)"/>
+  <!-- Left leaf -->
+  <path d="M 96 88 Q 74 72 72 58 Q 80 62 96 82" fill="#5A9E6F" opacity="0.9"/>
 
-  <!-- Left stroke with curve -->
-  <path d="M 70 48 L 70 62 Q 70 78 58 94 Q 48 108 52 124 Q 56 138 68 142"
-        stroke="url(#ink)" stroke-width="4.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Right leaf -->
+  <path d="M 96 76 Q 118 56 124 44 Q 118 52 96 70" fill="#7EC8B8" opacity="0.9"/>
 
-  <!-- Right stroke with curve -->
-  <path d="M 122 48 L 122 62 Q 122 78 134 94 Q 142 108 138 124 Q 134 138 124 142"
-        stroke="url(#ink)" stroke-width="4.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Tiny top bud -->
+  <ellipse cx="96" cy="66" rx="4" ry="6" fill="#5A9E6F" transform="rotate(-5, 96, 66)"/>
 
-  <!-- Center vertical stem -->
-  <path d="M 96 48 L 96 138" stroke="url(#ink)" stroke-width="4" stroke-linecap="round"/>
-
-  <!-- Crossbar with slight curve -->
-  <path d="M 62 95 Q 78 88 96 90 Q 114 88 130 95"
-        stroke="url(#ink)" stroke-width="3.5" fill="none" stroke-linecap="round"/>
-
-  <!-- Bottom decorative curve connecting legs -->
-  <path d="M 68 142 Q 80 150 96 148 Q 112 150 124 142"
-        stroke="url(#ink)" stroke-width="3" fill="none" stroke-linecap="round"/>
-
-  <!-- Bindu dot ornament (classic Sanskrit element) -->
-  <circle cx="96" cy="68" r="4" fill="url(#ink)"/>
-
-  <!-- Small flanking dots -->
-  <circle cx="78" cy="120" r="2" fill="url(#ink)" opacity="0.5"/>
-  <circle cx="114" cy="120" r="2" fill="url(#ink)" opacity="0.5"/>
-
-  <!-- "anvaya" text at bottom -->
-  <text x="96" y="172" font-family="Georgia, 'Times New Roman', serif" font-size="16" font-weight="400"
-        fill="#5B3A29" text-anchor="middle" letter-spacing="3" opacity="0.7">anvaya</text>
+  <!-- anvaya text -->
+  <text x="96" y="152" font-family="Georgia, serif" font-size="17" font-style="italic"
+        fill="#4A2C1A" text-anchor="middle" letter-spacing="4" opacity="0.75">anvaya</text>
 </svg>
