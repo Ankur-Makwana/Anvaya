@@ -1,8 +1,9 @@
-const CACHE_NAME = 'anvaya-v1';
+const CACHE_NAME = 'anvaya-v2';
 const ASSETS = [
     './',
     './index.html',
     './style.css',
+    './icons.js',
     './store.js',
     './app.js',
     './manifest.json',

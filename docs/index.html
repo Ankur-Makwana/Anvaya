@@ -18,29 +18,54 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div id="app">
-        <!-- Header -->
-        <header class="app-header">
-            <div class="header-content">
-                <h1 class="app-title">Anvaya</h1>
-                <p class="app-subtitle">Small Habits. Meaningful Change.</p>
-                <p class="app-date" id="todayDate"></p>
-            </div>
-            <button class="settings-btn" onclick="app.showSettings()" aria-label="Settings">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="3"></circle>
-                    <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path>
-                </svg>
-            </button>
-        </header>
 
-        <!-- Activity List -->
-        <main class="activity-list" id="activityList">
+    <!-- Splash Screen -->
+    <div id="splashScreen" class="splash" onclick="app.dismissSplash()">
+        <div class="splash-content">
+            <img src="icons/icon-192.svg" class="splash-icon" alt="Anvaya">
+            <h1 class="splash-title">Anvaya</h1>
+            <p class="splash-tagline">Small Habits. Meaningful Change.</p>
+        </div>
+    </div>
+
+    <!-- Onboarding -->
+    <div id="onboarding" class="onboarding hidden">
+        <div id="onboardingContent">
+            <!-- Rendered by JS -->
+        </div>
+    </div>
+
+    <!-- Main App -->
+    <div id="app" class="hidden">
+        <!-- Main Content (swapped by tabs) -->
+        <main id="mainContent">
             <!-- Rendered by JS -->
         </main>
 
-        <!-- Bottom safe area spacer for iOS -->
-        <div class="bottom-spacer"></div>
+        <!-- Bottom Tab Bar -->
+        <nav id="tabBar" class="tab-bar">
+            <button class="tab active" data-tab="today" onclick="app.switchTab('today')">
+                <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="4" width="18" height="18" rx="3"/>
+                    <path d="M3 10h18"/><path d="M9 2v4"/><path d="M15 2v4"/>
+                    <path d="M9 15l2 2 4-4" stroke-width="2"/>
+                </svg>
+                <span class="tab-label">Today</span>
+            </button>
+            <button class="tab" data-tab="activities" onclick="app.switchTab('activities')">
+                <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/>
+                    <rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/>
+                </svg>
+                <span class="tab-label">Activities</span>
+            </button>
+            <button class="tab" data-tab="profile" onclick="app.switchTab('profile')">
+                <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0112 0v1"/>
+                </svg>
+                <span class="tab-label" id="profileTabLabel">Profile</span>
+            </button>
+        </nav>
     </div>
 
     <!-- Log Entry Modal -->
@@ -51,40 +76,35 @@
                 <h2 class="modal-title" id="modalTitle"></h2>
                 <div style="width:60px"></div>
             </div>
-            <div class="modal-body" id="modalBody">
-                <!-- Rendered by JS -->
-            </div>
+            <div class="modal-body" id="modalBody"></div>
         </div>
     </div>
 
-    <!-- Settings Modal -->
-    <div class="modal-overlay" id="settingsOverlay" onclick="app.closeSettings()">
-        <div class="modal modal-full" onclick="event.stopPropagation()">
-            <div class="modal-header">
-                <button class="modal-close" onclick="app.closeSettings()">Done</button>
-                <h2 class="modal-title">Settings</h2>
-                <button class="modal-action" onclick="app.showAddActivity()">+ New</button>
-            </div>
-            <div class="modal-body" id="settingsBody">
-                <!-- Rendered by JS -->
-            </div>
-        </div>
-    </div>
-
-    <!-- Add/Edit Activity Modal -->
+    <!-- Edit Activity Modal -->
     <div class="modal-overlay" id="editActivityOverlay" onclick="app.closeEditActivity()">
         <div class="modal modal-full" onclick="event.stopPropagation()">
             <div class="modal-header">
                 <button class="modal-close" onclick="app.closeEditActivity()">Cancel</button>
                 <h2 class="modal-title" id="editActivityTitle">New Activity</h2>
-                <button class="modal-action" id="editActivitySave" onclick="app.saveActivity()">Save</button>
+                <button class="modal-action" onclick="app.saveActivity()">Save</button>
             </div>
-            <div class="modal-body" id="editActivityBody">
-                <!-- Rendered by JS -->
-            </div>
+            <div class="modal-body" id="editActivityBody"></div>
         </div>
     </div>
 
+    <!-- More Activities Modal -->
+    <div class="modal-overlay" id="moreOverlay" onclick="app.closeMore()">
+        <div class="modal" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <button class="modal-close" onclick="app.closeMore()">Done</button>
+                <h2 class="modal-title">Add for Today</h2>
+                <div style="width:60px"></div>
+            </div>
+            <div class="modal-body" id="moreBody"></div>
+        </div>
+    </div>
+
+    <script src="icons.js"></script>
     <script src="store.js"></script>
     <script src="app.js"></script>
     <script>
