@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head><title>Create PNG Icons</title></head>
+<body>
+<h2>Creating PNG icons...</h2>
+<div id="status"></div>
+<script>
+const svgContent = `<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 192 192">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#F5CEBB"/>
+      <stop offset="100%" style="stop-color:#EAAD94"/>
+    </linearGradient>
+  </defs>
+  <rect width="192" height="192" rx="42" fill="url(#bg)"/>
+  <ellipse cx="96" cy="118" rx="32" ry="6" fill="#4A2C1A" opacity="0.12"/>
+  <path d="M 96 118 Q 94 95 96 70" stroke="#3D6B4F" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <path d="M 96 88 Q 74 72 72 58 Q 80 62 96 82" fill="#5A9E6F" opacity="0.9"/>
+  <path d="M 96 76 Q 118 56 124 44 Q 118 52 96 70" fill="#7EC8B8" opacity="0.9"/>
+  <ellipse cx="96" cy="66" rx="4" ry="6" fill="#5A9E6F" transform="rotate(-5, 96, 66)"/>
+  <text x="96" y="152" font-family="Georgia, serif" font-size="17" font-style="italic"
+        fill="#4A2C1A" text-anchor="middle" letter-spacing="4" opacity="0.75">anvaya</text>
+</svg>`;
+
+const sizes = [180, 192, 512];
+const status = document.getElementById('status');
+
+sizes.forEach(size => {
+    const canvas = document.createElement('canvas');
+    canvas.width = size;
+    canvas.height = size;
+    const ctx = canvas.getContext('2d');
+    const img = new Image();
+    const blob = new Blob([svgContent], {type: 'image/svg+xml;charset=utf-8'});
+    const url = URL.createObjectURL(blob);
+    img.onload = () => {
+        ctx.drawImage(img, 0, 0, size, size);
+        URL.revokeObjectURL(url);
+        const link = document.createElement('a');
+        link.download = 'icon-' + size + '.png';
+        link.href = canvas.toDataURL('image/png');
+        link.textContent = 'Download icon-' + size + '.png';
+        link.style.display = 'block';
+        link.style.fontSize = '20px';
+        link.style.margin = '16px';
+        status.appendChild(link);
+        // Auto-click to download
+        link.click();
+    };
+    img.src = url;
+});
+</script>
+</body>
+</html>
