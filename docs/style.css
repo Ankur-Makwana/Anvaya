@@ -309,7 +309,7 @@ body {
 .more-tile-label { font-size: 13px; font-weight: 500; }
 
 /* ===== Activities Tab ===== */
-.activities-header { padding: 20px; display: flex; justify-content: space-between; align-items: center; }
+.activities-header { padding: 20px; padding-top: calc(env(safe-area-inset-top, 44px) + 12px); display: flex; justify-content: space-between; align-items: center; }
 .activities-title { font-size: 26px; font-weight: 700; }
 
 .add-activity-btn {
@@ -354,7 +354,7 @@ body {
 }
 
 /* ===== Profile Tab ===== */
-.profile-view { padding: 20px; text-align: center; }
+.profile-view { padding: 20px; padding-top: calc(env(safe-area-inset-top, 44px) + 12px); text-align: center; }
 
 .profile-avatar {
     width: 80px; height: 80px; border-radius: 50%;
