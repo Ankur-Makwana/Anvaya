@@ -189,6 +189,85 @@ const app = {
         }
     },
 
+    // ===== Long Press ====
+    longPressTimer: null,
+    longPressId: null,
+
+    tileDown(activityId, e) {
+        this.longPressTimer = setTimeout(() => {
+            this.longPressId = activityId;
+            this.showActionSheet(activityId);
+        }, 500);
+    },
+
+    tileUp() {
+        if (this.longPressTimer) { clearTimeout(this.longPressTimer); this.longPressTimer = null; }
+    },
+
+    tileMove() {
+        if (this.longPressTimer) { clearTimeout(this.longPressTimer); this.longPressTimer = null; }
+    },
+
+    // ===== Action Sheet =====
+    showActionSheet(activityId) {
+        const a = store.activities.find(x => x.id === activityId);
+        if (!a) return;
+        this.actionSheetActivityId = activityId;
+        document.getElementById('actionSheetHeader').innerHTML = `
+            <div style="display:flex;align-items:center;gap:10px;padding:4px 0">
+                <div style="width:28px;height:28px;color:var(--mint)">${getIcon(a.icon || 'default')}</div>
+                <span style="font-weight:600;font-size:16px">${a.name}</span>
+            </div>
+        `;
+        document.getElementById('actionSheetBody').innerHTML = `
+            <button class="action-sheet-option" onclick="app.skipActivity()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                <span>Skip for today</span>
+            </button>
+            <button class="action-sheet-option" onclick="app.editFromActionSheet()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="3"/><path d="M3 10h18"/></svg>
+                <span>Edit schedule</span>
+            </button>
+            <button class="action-sheet-option danger" onclick="app.archiveFromActionSheet()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M10 11v6M14 11v6M5 7l1 12a2 2 0 002 2h8a2 2 0 002-2l1-12M9 7V4a1 1 0 011-1h4a1 1 0 011 1v3"/></svg>
+                <span>Archive activity</span>
+            </button>
+        `;
+        document.getElementById('actionSheetOverlay').classList.add('open');
+    },
+
+    closeActionSheet() {
+        document.getElementById('actionSheetOverlay').classList.remove('open');
+        this.actionSheetActivityId = null;
+    },
+
+    skipActivity() {
+        if (this.actionSheetActivityId) {
+            store.skipForToday(this.actionSheetActivityId);
+        }
+        this.closeActionSheet();
+        this.render();
+    },
+
+    editFromActionSheet() {
+        const id = this.actionSheetActivityId;
+        this.closeActionSheet();
+        if (id) this.editActivity(id);
+    },
+
+    archiveFromActionSheet() {
+        if (this.actionSheetActivityId) {
+            store.archiveActivity(this.actionSheetActivityId);
+        }
+        this.closeActionSheet();
+        this.render();
+    },
+
+    unskipActivity(activityId) {
+        store.unskipForToday(activityId);
+        this.render();
+    },
+
     // ===== Today View =====
     renderToday() {
         const profile = store.getUserProfile();
@@ -199,20 +278,92 @@ const app = {
         const progress = store.todayProgress();
         const pct = progress.total > 0 ? Math.round((progress.done / progress.total) * 100) : 0;
 
-        let sceneHtml = '';
-        if (tod === 'morning' || tod === 'afternoon') {
-            sceneHtml = `<div class="scene-sun"></div><div class="scene-cloud scene-cloud-1"></div><div class="scene-cloud scene-cloud-2"></div>`;
-        } else if (tod === 'evening') {
-            sceneHtml = `<div class="scene-sun"></div><div class="scene-cloud scene-cloud-1"></div>`;
-        } else {
-            sceneHtml = `<div class="scene-moon"></div>
-                <div class="scene-star" style="top:12px;left:20%"></div>
-                <div class="scene-star" style="top:24px;left:45%"></div>
-                <div class="scene-star" style="top:8px;left:65%"></div>
-                <div class="scene-star" style="top:30px;left:80%"></div>`;
-        }
+        // Set theme color to match header
+        const themeColors = { morning: '#FDE8D0', afternoon: '#D4EDFC', evening: '#E8D5F0', night: '#2D3452' };
+        const meta = document.getElementById('themeColor');
+        if (meta) meta.setAttribute('content', themeColors[tod] || '#FAF7F2');
+
+        // Scene illustrations
+        const scenes = {
+            morning: `
+                <svg class="scene-svg" viewBox="0 0 400 140" preserveAspectRatio="xMidYMax slice">
+                    <!-- Sun with rays -->
+                    <circle cx="320" cy="40" r="22" fill="#FFD54F" opacity="0.9"/>
+                    <g stroke="#FFD54F" stroke-width="2" opacity="0.5">
+                        <line x1="320" y1="10" x2="320" y2="2"/><line x1="320" y1="70" x2="320" y2="78"/>
+                        <line x1="290" y1="40" x2="282" y2="40"/><line x1="350" y1="40" x2="358" y2="40"/>
+                        <line x1="299" y1="19" x2="293" y2="13"/><line x1="341" y1="61" x2="347" y2="67"/>
+                        <line x1="341" y1="19" x2="347" y2="13"/><line x1="299" y1="61" x2="293" y2="67"/>
+                    </g>
+                    <!-- Tree -->
+                    <rect x="50" y="90" width="6" height="40" rx="2" fill="#8B7355" opacity="0.3"/>
+                    <circle cx="53" cy="78" r="22" fill="#7EC8B8" opacity="0.18"/>
+                    <circle cx="42" cy="85" r="14" fill="#5A9E6F" opacity="0.15"/>
+                    <!-- Clouds -->
+                    <ellipse cx="180" cy="35" rx="35" ry="12" fill="white" opacity="0.35"/>
+                    <ellipse cx="200" cy="30" rx="25" ry="10" fill="white" opacity="0.25"/>
+                    <ellipse cx="260" cy="55" rx="20" ry="8" fill="white" opacity="0.2"/>
+                    <!-- Hills -->
+                    <ellipse cx="100" cy="145" rx="150" ry="40" fill="#7EC8B8" opacity="0.1"/>
+                    <ellipse cx="320" cy="148" rx="120" ry="32" fill="#C4B4D8" opacity="0.08"/>
+                </svg>`,
+            afternoon: `
+                <svg class="scene-svg" viewBox="0 0 400 140" preserveAspectRatio="xMidYMax slice">
+                    <!-- Bright sun -->
+                    <circle cx="300" cy="35" r="26" fill="#FFD54F" opacity="0.8"/>
+                    <circle cx="300" cy="35" r="34" fill="#FFD54F" opacity="0.15"/>
+                    <!-- Tree -->
+                    <rect x="55" y="88" width="6" height="42" rx="2" fill="#8B7355" opacity="0.3"/>
+                    <circle cx="58" cy="72" r="24" fill="#7EC8B8" opacity="0.2"/>
+                    <circle cx="46" cy="80" r="16" fill="#5A9E6F" opacity="0.15"/>
+                    <!-- Fluffy clouds -->
+                    <ellipse cx="150" cy="40" rx="40" ry="14" fill="white" opacity="0.4"/>
+                    <ellipse cx="170" cy="34" rx="28" ry="11" fill="white" opacity="0.3"/>
+                    <ellipse cx="240" cy="60" rx="22" ry="9" fill="white" opacity="0.2"/>
+                    <!-- Hills -->
+                    <ellipse cx="80" cy="146" rx="140" ry="38" fill="#7EC8B8" opacity="0.1"/>
+                    <ellipse cx="340" cy="150" rx="100" ry="28" fill="#C4B4D8" opacity="0.08"/>
+                </svg>`,
+            evening: `
+                <svg class="scene-svg" viewBox="0 0 400 140" preserveAspectRatio="xMidYMax slice">
+                    <!-- Setting sun -->
+                    <circle cx="330" cy="80" r="28" fill="#FF9E80" opacity="0.7"/>
+                    <circle cx="330" cy="80" r="40" fill="#FF9E80" opacity="0.12"/>
+                    <!-- Tree silhouette -->
+                    <rect x="50" y="85" width="7" height="45" rx="2" fill="#4A2C1A" opacity="0.2"/>
+                    <circle cx="54" cy="70" r="24" fill="#4A2C1A" opacity="0.12"/>
+                    <circle cx="42" cy="78" r="16" fill="#4A2C1A" opacity="0.1"/>
+                    <!-- Birds -->
+                    <path d="M150 45 Q155 40 160 45" stroke="#4A2C1A" stroke-width="1.5" fill="none" opacity="0.2"/>
+                    <path d="M170 38 Q174 34 178 38" stroke="#4A2C1A" stroke-width="1.5" fill="none" opacity="0.15"/>
+                    <!-- Hills -->
+                    <ellipse cx="100" cy="148" rx="160" ry="42" fill="#4A2C1A" opacity="0.08"/>
+                    <ellipse cx="320" cy="150" rx="120" ry="34" fill="#C4B4D8" opacity="0.1"/>
+                </svg>`,
+            night: `
+                <svg class="scene-svg" viewBox="0 0 400 140" preserveAspectRatio="xMidYMax slice">
+                    <!-- Moon -->
+                    <circle cx="320" cy="35" r="18" fill="#E8E0F0" opacity="0.8"/>
+                    <circle cx="328" cy="30" r="15" fill="#2D3452"/>
+                    <!-- Stars (5-point) -->
+                    <polygon points="100,20 102,26 108,26 103,30 105,36 100,32 95,36 97,30 92,26 98,26" fill="#E8E0F0" opacity="0.6" class="twinkle"/>
+                    <polygon points="180,15 181,18 184,18 182,20 183,23 180,21 177,23 178,20 176,18 179,18" fill="#E8E0F0" opacity="0.4" class="twinkle-delay"/>
+                    <polygon points="250,30 251,33 254,33 252,35 253,38 250,36 247,38 248,35 246,33 249,33" fill="#E8E0F0" opacity="0.5" class="twinkle"/>
+                    <polygon points="60,35 61,37 63,37 62,39 62,41 60,40 58,41 58,39 57,37 59,37" fill="#E8E0F0" opacity="0.3" class="twinkle-delay"/>
+                    <circle cx="150" cy="45" r="1.5" fill="#E8E0F0" opacity="0.3"/>
+                    <circle cx="220" cy="20" r="1" fill="#E8E0F0" opacity="0.25"/>
+                    <circle cx="350" cy="60" r="1.5" fill="#E8E0F0" opacity="0.2"/>
+                    <!-- Tree silhouette -->
+                    <rect x="50" y="88" width="7" height="42" rx="2" fill="#1a1f35" opacity="0.4"/>
+                    <circle cx="54" cy="74" r="22" fill="#1a1f35" opacity="0.3"/>
+                    <!-- Hills -->
+                    <ellipse cx="100" cy="148" rx="160" ry="42" fill="#1a1f35" opacity="0.3"/>
+                    <ellipse cx="320" cy="150" rx="120" ry="34" fill="#2a2050" opacity="0.25"/>
+                </svg>`,
+        };
 
         const activities = store.todayScheduledActivities();
+        const skipped = store.todaySkippedActivities();
         const unscheduled = store.unscheduledActivities();
 
         let tilesHtml = activities.map(a => {
@@ -220,7 +371,12 @@ const app = {
             const prog = store.calculateProgress(a, logs);
             const status = this.getStatusText(a, logs);
             return `
-                <div class="tile ${prog.isComplete ? 'complete' : ''}" onclick="app.openLog('${a.id}')">
+                <div class="tile ${prog.isComplete ? 'complete' : ''}"
+                     onclick="app.openLog('${a.id}')"
+                     ontouchstart="app.tileDown('${a.id}', event)"
+                     ontouchend="app.tileUp()"
+                     ontouchmove="app.tileMove()"
+                     oncontextmenu="event.preventDefault(); app.showActionSheet('${a.id}')">
                     <div class="tile-fill" style="height:${prog.percentage}%"></div>
                     <div class="tile-icon">${getIcon(a.icon || 'default')}</div>
                     <div class="tile-name">${a.name}</div>
@@ -238,12 +394,29 @@ const app = {
             `;
         }
 
+        // Skipped section
+        let skippedHtml = '';
+        if (skipped.length > 0) {
+            skippedHtml = `
+                <div class="skipped-section">
+                    <div class="skipped-label">Skipped today (${skipped.length})</div>
+                    <div class="skipped-list">
+                        ${skipped.map(a => `
+                            <div class="skipped-item">
+                                <div class="skipped-icon">${getIcon(a.icon || 'default')}</div>
+                                <span class="skipped-name">${a.name}</span>
+                                <button class="skipped-undo" onclick="app.unskipActivity('${a.id}')">Undo</button>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
         return `
             <div class="today-header ${tod}">
                 <div class="scene-elements">
-                    ${sceneHtml}
-                    <div class="scene-hill scene-hill-1"></div>
-                    <div class="scene-hill scene-hill-2"></div>
+                    ${scenes[tod]}
                 </div>
                 <div class="header-top">
                     <img src="icons/icon-192.svg" class="header-logo" alt="">
@@ -258,6 +431,7 @@ const app = {
                 </div>
             </div>
             <div class="tile-grid">${tilesHtml}</div>
+            ${skippedHtml}
         `;
     },
 

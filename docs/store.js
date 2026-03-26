@@ -99,6 +99,7 @@ class DataStore {
             this.migrate();
         }
         this.cleanupOldExtras();
+        this.cleanupOldSkips();
     }
 
     save() {
@@ -173,6 +174,36 @@ class DataStore {
         localStorage.setItem('anvaya_extras', JSON.stringify(recent));
     }
 
+    // ===== Skipped (activities removed from today) =====
+    getSkippedToday() {
+        const skipped = JSON.parse(localStorage.getItem('anvaya_skipped') || '[]');
+        const today = todayString();
+        return skipped.filter(s => s.date === today);
+    }
+
+    skipForToday(activityId) {
+        const skipped = JSON.parse(localStorage.getItem('anvaya_skipped') || '[]');
+        const today = todayString();
+        if (!skipped.some(s => s.activityId === activityId && s.date === today)) {
+            skipped.push({ activityId, date: today });
+            localStorage.setItem('anvaya_skipped', JSON.stringify(skipped));
+        }
+    }
+
+    unskipForToday(activityId) {
+        const skipped = JSON.parse(localStorage.getItem('anvaya_skipped') || '[]');
+        const today = todayString();
+        const filtered = skipped.filter(s => !(s.activityId === activityId && s.date === today));
+        localStorage.setItem('anvaya_skipped', JSON.stringify(filtered));
+    }
+
+    cleanupOldSkips() {
+        const skipped = JSON.parse(localStorage.getItem('anvaya_skipped') || '[]');
+        const today = todayString();
+        const recent = skipped.filter(s => s.date === today);
+        localStorage.setItem('anvaya_skipped', JSON.stringify(recent));
+    }
+
     // ===== Activities =====
     activeActivities() {
         return this.activities
@@ -187,9 +218,16 @@ class DataStore {
     todayScheduledActivities() {
         const dayOfWeek = new Date().getDay();
         const extraIds = this.getExtrasToday().map(e => e.activityId);
+        const skippedIds = this.getSkippedToday().map(s => s.activityId);
         return this.activeActivities().filter(a =>
-            (a.cadence && a.cadence.includes(dayOfWeek)) || extraIds.includes(a.id)
+            !skippedIds.includes(a.id) &&
+            ((a.cadence && a.cadence.includes(dayOfWeek)) || extraIds.includes(a.id))
         );
+    }
+
+    todaySkippedActivities() {
+        const skippedIds = this.getSkippedToday().map(s => s.activityId);
+        return this.activeActivities().filter(a => skippedIds.includes(a.id));
     }
 
     unscheduledActivities() {

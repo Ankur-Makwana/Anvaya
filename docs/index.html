@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Anvaya">
-    <meta name="theme-color" content="#FAF7F2">
+    <meta name="theme-color" id="themeColor" content="#FAF7F2">
     <title>Anvaya</title>
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" sizes="180x180" href="icons/icon-180.png">
@@ -101,6 +101,15 @@
                 <div style="width:60px"></div>
             </div>
             <div class="modal-body" id="moreBody"></div>
+        </div>
+    </div>
+
+    <!-- Action Sheet (long-press on tile) -->
+    <div class="modal-overlay" id="actionSheetOverlay" onclick="app.closeActionSheet()">
+        <div class="action-sheet" onclick="event.stopPropagation()">
+            <div class="action-sheet-header" id="actionSheetHeader"></div>
+            <div id="actionSheetBody"></div>
+            <button class="action-sheet-cancel" onclick="app.closeActionSheet()">Cancel</button>
         </div>
     </div>
 
