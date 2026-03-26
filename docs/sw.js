@@ -1,4 +1,4 @@
-const CACHE_NAME = 'anvaya-v2';
+const CACHE_NAME = 'anvaya-v3';
 const ASSETS = [
     './',
     './index.html',
@@ -9,7 +9,7 @@ const ASSETS = [
     './manifest.json',
 ];
 
-// Install: cache all assets
+// Install: cache all assets immediately
 self.addEventListener('install', e => {
     e.waitUntil(
         caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS))
@@ -17,7 +17,7 @@ self.addEventListener('install', e => {
     self.skipWaiting();
 });
 
-// Activate: clean old caches
+// Activate: clean old caches + take control immediately
 self.addEventListener('activate', e => {
     e.waitUntil(
         caches.keys().then(keys =>
@@ -27,9 +27,29 @@ self.addEventListener('activate', e => {
     self.clients.claim();
 });
 
-// Fetch: cache-first, fallback to network
+// Fetch: network-first, fallback to cache (ensures fresh content)
 self.addEventListener('fetch', e => {
+    // Only handle same-origin GET requests
+    if (e.request.method !== 'GET') return;
+
     e.respondWith(
-        caches.match(e.request).then(cached => cached || fetch(e.request))
+        fetch(e.request)
+            .then(response => {
+                // Got a fresh response — cache it for offline use
+                if (response.ok) {
+                    const clone = response.clone();
+                    caches.open(CACHE_NAME).then(cache => cache.put(e.request, clone));
+                }
+                return response;
+            })
+            .catch(() => {
+                // Network failed — serve from cache (offline mode)
+                return caches.match(e.request);
+            })
     );
+});
+
+// Listen for messages from the app
+self.addEventListener('message', e => {
+    if (e.data === 'skipWaiting') self.skipWaiting();
 });
